@@ -13,7 +13,7 @@ const App = () => {
   // UseEffect que se ejecuta solo después de que el usuario esté autenticado
   useEffect(() => {
     if (isAuthenticated) {
-      fetch('http://localhost:5289/api/Get')  // Hacer la solicitud solo si el usuario está autenticado
+      fetch('http://localhost:5289/api/GetMessage')  // Hacer la solicitud solo si el usuario está autenticado
         .then(response => response.json())
         .then(data => setData(data))
         .catch(error => console.error("Error fetching data:", error));

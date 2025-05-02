@@ -13,7 +13,7 @@ const Content = ({ data }) => {
             <div className="card h-100">
               <div className="card-body">
                 <h5 className="card-title">Item {index + 1}</h5>
-                <p className="card-text">{item}</p>
+                <p className="card-text">{item.title}</p>
               </div>
             </div>
           </div>

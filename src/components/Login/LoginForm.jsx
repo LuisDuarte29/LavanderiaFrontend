@@ -10,24 +10,25 @@ const LoginForm = ({ onLogin }) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5289/api/GetUsuarios', {
+            const response = await fetch('https://localhost:7184/api/Autenticacion', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ Usuario, PasswordString }),
+                body: JSON.stringify({ correo:Usuario, clave:PasswordString }),
+            }).then(response=>{
+                if (!response.ok){
+                    throw new error("Credenciales incorrectas")
+                } 
+                return response.json();
+            }).then(data=>{
+                const token=data.token
+                localStorage.setItem('token',token)
+                onLogin(true)
+                console.log(token)
             });
 
-            if (response.ok) {
-            
-            
-                alert("Inicio de sesión exitoso");
-                onLogin(true); // Notifica al componente padre que la autenticación fue exitosa
-            } else if (response.status === 400) {
-                alert("Credenciales incorrectas");
-            } else {
-                alert("Error al iniciar sesión. Inténtalo nuevamente.");
-            }
+      
         } catch (error) {
             console.error("Error al comunicarse con la API:", error);
             alert("Ocurrió un error. Verifica tu conexión e inténtalo de nuevo.");

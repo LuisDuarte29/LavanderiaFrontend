@@ -5,6 +5,7 @@ import Content from './components/MasterPageLoad/Content';
 import LoginForm from './components/Login/LoginForm'; // Componente de Login
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import Lista from './components/MasterPageLoad/Lista'
 
 const App = () => {
   const [data, setData] = useState([]); // Datos a obtener de la API
@@ -12,12 +13,36 @@ const App = () => {
 
   // UseEffect que se ejecuta solo después de que el usuario esté autenticado
   useEffect(() => {
-    if (isAuthenticated) {
-      fetch('http://localhost:5289/api/GetMessage')  // Hacer la solicitud solo si el usuario está autenticado
-        .then(response => response.json())
-        .then(data => setData(data))
-        .catch(error => console.error("Error fetching data:", error));
+    const fechData=async ()=>{
+
+
+      const tokenRecibido=localStorage.getItem("token");
+      console.log(tokenRecibido)
+    const peticionFetch= await fetch('https://localhost:7184/api/Customer', {
+        method:"GET",
+        headers:{
+          "Authorization":`Bearer ${tokenRecibido}`,
+          "Content-Type":"application/json"
+        }
+      }).then(response=>{
+          if(!response.ok){
+            throw new Error("Ha ocurrido un error")
+          }
+          return response.json();
+      }).then(data=>{
+       setData(data)
+        console.log("Este es la data del customer: " + data)
+      })
+    
+
+
     }
+    if (isAuthenticated){
+      fechData();
+    }
+
+      
+
   }, [isAuthenticated]); // Este efecto solo se ejecutará cuando cambie el estado de autenticación
 
   // Maneja la autenticación
@@ -32,8 +57,7 @@ const App = () => {
       ) : (
         <>
           <Navbar />
-          <Hero />
-          <Content data={data} />
+          <Lista data={data}/>
         </>
       )}
     </div>

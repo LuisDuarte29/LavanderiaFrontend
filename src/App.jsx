@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from './components/MasterPageLoad/Navbar';
-import Hero from './components/MasterPageLoad/Hero';
-import Content from './components/MasterPageLoad/Content';
+import {BrowserRouter as Router, Routes,Route, Navigate} from 'react-router-dom'
 import LoginForm from './components/Login/LoginForm'; // Componente de Login
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Lista from './components/MasterPageLoad/Lista'
+import ListaPedidos from './components/MasterPageLoad/ListaPedidos'; // Componente de ListaPedidos
+import CreatePedidos from './components/MasterPageLoad/CreatePedidos';
 
 const App = () => {
   const [data, setData] = useState([]); // Datos a obtener de la API
@@ -18,7 +19,7 @@ const App = () => {
 
       const tokenRecibido=localStorage.getItem("token");
       console.log(tokenRecibido)
-    const peticionFetch= await fetch('https://localhost:7184/api/Customer', {
+    await fetch('https://localhost:7184/api/Customer', {
         method:"GET",
         headers:{
           "Authorization":`Bearer ${tokenRecibido}`,
@@ -33,9 +34,9 @@ const App = () => {
        setData(data)
         console.log("Este es la data del customer: " + data)
       })
-    
-
-
+      .catch(error=>{
+        console.error("Error al obtener los datos:", error)
+      })
     }
     if (isAuthenticated){
       fechData();
@@ -51,16 +52,66 @@ const App = () => {
   };
 
   return (
-    <div className='container-fluid min-vh-100 min-vw-100'>
-      {!isAuthenticated ? (
-        <LoginForm onLogin={handleLogin} /> // Si no está autenticado, mostrar el login
+<Router>
+<div className='container-fluid min-vh-100 min-vw-100'>
+<Routes>
+  <Route 
+    path="/login" 
+    element={
+      !isAuthenticated ? (
+        <LoginForm onLogin={handleLogin} />
       ) : (
         <>
-          <Navbar />
-          <Lista data={data}/>
+        <Navigate to="/Home" replace />
         </>
-      )}
+      )
+    } 
+  />
+  <Route 
+    path="/Home" 
+    element={
+      isAuthenticated ? (
+        <>
+          <Navbar setautenticated={setIsAuthenticated}/>{/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+          <Lista data={data} /> {/* Pasa los datos a la lista */}
+        </>
+      ) : (
+        <Navigate to="/login" replace />
+      )
+    }
+  />
+    <Route 
+    path="/ListaPedidos" 
+    element={
+      isAuthenticated ? (
+        <>
+          <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+          <ListaPedidos isAuthenticated={isAuthenticated}/> {/* Asegúrate de importar este componente */}
+        </>
+      ) : (
+        <Navigate to="/login" replace />
+      )
+    }
+  />
+      <Route 
+    path="/CreatePedidos" 
+    element={
+      isAuthenticated ? (
+        <>
+          <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+          <CreatePedidos isAuthenticated={isAuthenticated}/> {/* Asegúrate de importar este componente */}
+        </>
+      ) : (
+        <Navigate to="/login" replace />
+      )
+    }
+  />
+
+</Routes>
+   
     </div>
+</Router>
+ 
   );
 };
 

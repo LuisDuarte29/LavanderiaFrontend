@@ -1,8 +1,15 @@
-import React from 'react';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
-const Navbar = () => {
+import {NavLink,useNavigate} from 'react-router-dom'
+const Navbar = ({setautenticated}) => {
+  const navigate = useNavigate(); // Hook para la navegación
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Elimina el token del almacenamiento local
+    setautenticated(false);/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/
+    navigate("/login"); // Redirige a la página de inicio de sesión
+    console.log("Logout exitoso"); // Mensaje de éxito en la consola
+  };
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
@@ -13,13 +20,13 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <a className="nav-link active" href='#ListaPedidos' >Home</a>
+<NavLink className="nav-link" to="/ListaPedidos">Lista Pedidos</NavLink>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#content">Features</a>
+            <NavLink className="nav-link" to="/Lista">Lista Customers</NavLink>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#footer">Contact</a>
+              <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
             </li>
           </ul>
         </div>

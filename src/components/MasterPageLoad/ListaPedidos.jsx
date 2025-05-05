@@ -1,5 +1,6 @@
 import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
+import {NavLink} from  'react-router-dom'
 
 // Creamos el tema custom una vez
 createTheme("custom", {
@@ -116,6 +117,10 @@ const ListadoPedidos = ({ isAuthenticated }) => {
         expandableRows
         expandableRowsComponent={DetallePedido}
       />
+      <button className="col-md-2 btn btn-primary">
+      <NavLink className="nav-link" to="/CreatePedidos">Crear Pedido</NavLink>
+      </button>
+      
     </div>
   );
 };

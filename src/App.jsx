@@ -54,7 +54,15 @@ const App = () => {
   return (
 <Router>
 <div className='container-fluid min-vh-100 min-vw-100'>
+  
+
 <Routes>
+  <Route 
+    path="/" 
+  element={
+    <Navigate to="/login" replace /> // Redirige a la página de inicio de sesión por defecto
+  }
+  />
   <Route 
     path="/login" 
     element={

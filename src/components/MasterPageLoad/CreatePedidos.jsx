@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import MenuItem from '@mui/material/MenuItem';
 import Select from 'react-select'
 
 const CreatePedidos = ({isAuthenticated}) => {

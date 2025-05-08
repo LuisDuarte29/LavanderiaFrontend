@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Select from 'react-select'
@@ -10,18 +10,83 @@ const CreatePedidos = ({isAuthenticated}) => {
         vehicle: '',
         employee: null,
     });
+    const [dataVehicle, setDataVehicle] = useState([]);
+    const [dataCustomer, setDataCustomer] = useState([]);
 
-    const vehicles = ['Car', 'Truck', 'Bike'];
-    const employees = [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Smith' },
-        { id: 3, name: 'Alice Johnson' },
-    ];
-    const options = employees.map(emp => ({
-        value: emp.id,
-        label: emp.name
-      }));
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const tokenRecibido = localStorage.getItem("token");
+      
+            const response = await fetch("https://localhost:7184/api/PaginaBase", {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${tokenRecibido}`,
+                "Content-Type": "application/json",
+              },
+            });
+      
+            if (!response.ok) {
+              throw new Error("Ha ocurrido un error");
+            }
+      
+            const data = await response.json();
+      console.log("Esta es la data del vehicle bruto:", data);
+            const dataVehicleBruto = data.map(item => ({
+              value: item.idVehicle,
+              label: item.vehicleName,
+            }));
+            setDataVehicle(dataVehicleBruto);
+      
+            console.log("Esta es la data del vehicle:", dataVehicleBruto);
+        
+      
+          } catch (error) {
+            console.error("Error al obtener los datos:", error);
+          }
+        };
+      
+        fetchData();
+      }, [isAuthenticated]);
 
+
+
+          useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const tokenRecibido = localStorage.getItem("token");
+      
+            const response = await fetch("https://localhost:7184/api/PaginaBase", {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${tokenRecibido}`,
+                "Content-Type": "application/json",
+              },
+            });
+      
+            if (!response.ok) {
+              throw new Error("Ha ocurrido un error");
+            }
+      
+            const data = await response.json();
+      console.log("Esta es la data del vehicle bruto:", data);
+            const dataCustomerBruto = data.map(item => ({
+              value: item.idVehicle,
+              label: item.vehicleName,
+            }));
+            setDataVehicle(dataVehicleBruto);
+      
+            console.log("Esta es la data del vehicle:", dataVehicleBruto);
+        
+      
+          } catch (error) {
+            console.error("Error al obtener los datos:", error);
+          }
+        };
+      
+        fetchData();
+      }, [isAuthenticated]);
+      
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -66,7 +131,7 @@ const CreatePedidos = ({isAuthenticated}) => {
             <div>
             <Select
   className="bg-white"
-  options={options}
+  options={dataVehicle}
   placeholder="Elige..."
   isSearchable
   noOptionsMessage={() => "No hay opciones"}
@@ -91,17 +156,9 @@ const CreatePedidos = ({isAuthenticated}) => {
 />
 
             </div>
-            <div>
-                <Autocomplete
-                    options={employees}
-                    getOptionLabel={(option) => option.name}
-                    value={formData.employee}
-                    onChange={handleEmployeeChange}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Employee" margin="normal" fullWidth />
-                    )}
-                />
-            </div>
+
+           
+      
             <div>
                 <button type="submit">Submit</button>
             </div>

@@ -114,6 +114,19 @@ const App = () => {
       )
     }
   />
+  <Route 
+    path="/ListaCustomer" 
+    element={
+      isAuthenticated ? (
+        <>
+          <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+          <Lista data={data}/> {/* Asegúrate de importar este componente */}
+        </>
+      ) : (
+        <Navigate to="/login" replace />
+      )
+    }
+  />
 
 </Routes>
    

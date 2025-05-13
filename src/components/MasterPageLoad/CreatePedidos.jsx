@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker'
 import {setDefaultLocale,registerLocale} from 'react-datepicker'
 import es from 'date-fns/locale/es';
 import "react-datepicker/dist/react-datepicker.css";
+import {CreatePedidosDetails} from '../PedidosDetails/CreatePedidosDetails.jsx'
 
 const CreatePedidos = ({isAuthenticated}) => {
     const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const CreatePedidos = ({isAuthenticated}) => {
     const [dataVehicle, setDataVehicle] = useState([]);
     const [dataCustomer, setDataCustomer] = useState([]);
     const [dataServicio,setDataServicio]=useState([])
+    const [selectServices, setSelectServices] = useState([]);
 
 registerLocale('es', es); // Registra el locale español
 setDefaultLocale('es'); // Establece el locale por defecto a español
@@ -119,6 +121,7 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
             const dataServicioBruto = data.map(item => ({
               value: item.serviceId,
               label: item.serviceName,
+              priceItem: item.precio,
             }));
             setDataServicio(dataServicioBruto);
       
@@ -147,9 +150,11 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
         console.log('Form Data:', formData);
     };
 
+
+
     return (
       <div className=' mt-5 row'>
-        <div className='col-md-8 col-sm-12 col-lg-8'> 
+        <div className='col-md-7 col-sm-8 col-lg-7'> 
  <div className='d-flex justify-content-center align-content-center mt-2 vw-90'>
  <div className='card col-md-8'>
  <div className=' card-body shadow-lg d-flex justify-content-center'>
@@ -269,7 +274,7 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
         </div>
         </div>
        
-    <div className='mt-2 me-3 col-md-3'>
+    <div className='mt-2 me-2 col-md-4'>
               <Select
   className="bg-white"
   options={dataServicio}
@@ -277,6 +282,7 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
   onChange={(selectedOption) => setFormData({ ...formData, servicio: selectedOption })}
   placeholder="Elige..."
   isSearchable
+  isMulti
   noOptionsMessage={() => "No hay opciones"}
   styles={{
     control: (base) => ({
@@ -297,21 +303,11 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
     })
   }}
 />
-    <table className='table table-bordered mt-2'>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Servicio</th>
-      <th>Acción</th>
-    </tr>
-  </thead>
-  <tbody>
- 
-  </tbody>
-</table>
+  <CreatePedidosDetails setSelectServices={(selectOption)=>setFormData(...formData, services=selectOption)} 
+  selectServices={formData.servicio}/>
    </div>
    <div>
-
+ 
 
    </div>
       </div>

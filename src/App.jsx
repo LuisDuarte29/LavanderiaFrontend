@@ -115,6 +115,20 @@ const App = () => {
     }
   />
   <Route 
+  path="/CreatePedidos/:id" 
+  element={
+    isAuthenticated ? (
+      <>
+        <Navbar setautenticated={setIsAuthenticated} />
+        <CreatePedidos isAuthenticated={isAuthenticated} />
+      </>
+    ) : (
+      <Navigate to="/login" replace />
+    )
+  }
+/>
+
+  <Route 
     path="/ListaCustomer" 
     element={
       isAuthenticated ? (

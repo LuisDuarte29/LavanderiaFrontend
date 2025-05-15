@@ -7,19 +7,22 @@ import {setDefaultLocale,registerLocale} from 'react-datepicker'
 import es from 'date-fns/locale/es';
 import "react-datepicker/dist/react-datepicker.css";
 import {CreatePedidosDetails} from '../PedidosDetails/CreatePedidosDetails.jsx'
+import {useNavigate} from 'react-router-dom'
 
 const CreatePedidos = ({isAuthenticated}) => {
+
+  const {id} =useParams();
+
     const [formData, setFormData] = useState({
-        fecha: new Date(),
-        comments: '',
-        vehicle: '',
-        employee: null,
-        servicio:[]
+        AppointmentDate: new Date(),
+        Comments  : '',
+        Vehicle: 0,
+        Employee: 0,
+        Services:[]
     });
     const [dataVehicle, setDataVehicle] = useState([]);
     const [dataCustomer, setDataCustomer] = useState([]);
     const [dataServicio,setDataServicio]=useState([])
-    const [selectServices, setSelectServices] = useState([]);
 
 registerLocale('es', es); // Registra el locale español
 setDefaultLocale('es'); // Establece el locale por defecto a español
@@ -59,7 +62,39 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
         fetchData();
       }, [isAuthenticated]);
 
+    const navigate=useNavigate()
+      const EnvioData = async () => {
+        try {
+          console.log("Este es el formData: ", formData);
 
+          const tokenRecibido = localStorage.getItem("token");
+          const response = await fetch("https://localhost:7184/api/Appointment", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${tokenRecibido}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              appointmentdate: formData.AppointmentDate,
+              comments: formData.Comments,
+              vehicle: formData.Vehicle?.value || formData.Vehicle,
+              employee: formData.Employee?.value || formData.Employee,
+              services: formData.Services.map((service) => ({
+                serviceId: service.value,
+              })),
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Ha ocurrido un error");
+          }
+
+          navigate("/ListaPedidos");
+        } catch (error) {
+          console.error("Error al obtener los datos:", error);
+        }
+      };
+      
 
           useEffect(() => {
         const fetchData = async () => {
@@ -136,13 +171,13 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
         fetchData();
       }, [isAuthenticated]);
       
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleChange = (e,value) => {
+        
+        setFormData({ ...formData, Comments: value });
     };
 
     const handleEmployeeChange = (event, value) => {
-        setFormData({ ...formData, employee: value });
+        setFormData({ ...formData, Employee: value });
     };
 
     const handleSubmit = (e) => {
@@ -161,8 +196,8 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
 <form onSubmit={handleSubmit} className='col-md-11'>
             <div className=''>
             <DatePicker
-            selected={formData.fecha}
-            onChange={(select=> setFormData({...formData,fecha:select}))} 
+            selected={formData.AppointmentDate}
+            onChange={(select=> setFormData({...formData,AppointmentDate:select}))} 
             dateFormat="dd-MM-yyyy"
             className='form-control'
                  locale="es"  // Aplica el locale en español
@@ -188,23 +223,25 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
             ></DatePicker>
             </div>
             <div className='mt-2'>
-                <TextField
+                <textarea
+                    type="text"
+                    placeholder="Comentarios"
+                    className="bg-white form-control"
                     label="Comments"
                     name="comments"
-                    value={formData.comments}
-                    onChange={handleChange}
-                    fullWidth
+                    value={formData.Comments}
+                    onChange={(e)=>setFormData({...formData,Comments:e.target.value})}
+           
                     margin="normal"
-                    multiline
                     rows={4}
                 />
             </div>
             <div>
             <Select
-  className="bg-white"
+  className="bg-white mt-2"
   options={dataVehicle}
-  value={formData.vehicle}
-  onChange={(selectedOption) => setFormData({ ...formData, vehicle: selectedOption })}
+  value={formData.Vehicle}
+  onChange={(selectedOption) => setFormData({ ...formData, Vehicle: selectedOption })}
   placeholder="Elige..."
   isSearchable
   noOptionsMessage={() => "No hay opciones"}
@@ -233,8 +270,8 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
               <Select
   className="bg-white"
   options={dataCustomer}
-  value={formData.customer}
-  onChange={(selectedOption) => setFormData({ ...formData, customer: selectedOption })}
+  value={formData.Employee}
+  onChange={(selectedOption) => setFormData({ ...formData, Employee: selectedOption })}
   placeholder="Elige..."
   isSearchable
   noOptionsMessage={() => "No hay opciones"}
@@ -264,8 +301,8 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
 </div>
            
       
-            <div>
-                <button type="submit">Submit</button>
+            <div className='d-flex justify-content-center mt-2'>
+                <button onClick={EnvioData} type="button">Submit</button>
             </div>
         </form>
 
@@ -278,8 +315,8 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
               <Select
   className="bg-white"
   options={dataServicio}
-  value={formData.servicio}
-  onChange={(selectedOption) => setFormData({ ...formData, servicio: selectedOption })}
+  value={formData.Services}
+  onChange={(selectedOption) => setFormData({ ...formData, Services: selectedOption })}
   placeholder="Elige..."
   isSearchable
   isMulti
@@ -303,8 +340,8 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
     })
   }}
 />
-  <CreatePedidosDetails setSelectServices={(selectOption)=>setFormData(...formData, services=selectOption)} 
-  selectServices={formData.servicio}/>
+  <CreatePedidosDetails setSelectServices={(selectOption)=>setFormData({...formData, Services:selectOption})} 
+  selectServices={formData.Services}/>
    </div>
    <div>
  

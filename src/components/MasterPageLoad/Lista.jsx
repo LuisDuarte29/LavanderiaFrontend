@@ -1,4 +1,6 @@
 import DataTable, { createTheme } from "react-data-table-component";
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigate } from "react-router-dom";
 
 // 1. Crear el tema personalizado FUERA del componente
 createTheme('custom', {
@@ -61,11 +63,13 @@ const Lista = ({ data }) => {
         )
     }
   ];
+ const navigate=useNavigate()
   const handleEditar=()=>{
-    console.log("este es el editar")
+    navigate("/CreatePedidos/"+row.id)
   }
   const handleVer=()=>{
     console.log("este es el boton de ver")
+    
   }
 
   return (

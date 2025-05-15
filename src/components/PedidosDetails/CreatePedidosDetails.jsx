@@ -34,7 +34,9 @@ useEffect(()=>{
   setPrecio(selectServices.reduce((acc,item)=>acc+ parseInt(item.priceItem),0))
 },[selectServices])
 
- 
+console.log("Este seria el selectServices: ",selectServices)
+const iterar=selectServices.map((item)=>{console.log("Estos serian los iterar: ", item.value)})
+
     const column= [
         {
             name: 'ServiceId',
@@ -51,6 +53,19 @@ useEffect(()=>{
             name: 'Price',
             selector: row => row.priceItem,
             sortable: true,
+        },
+        {
+          name:'Acciones',
+          cell:row=>(
+            <div className="d-flex justify-content-end gap-2">
+            <button
+              className="btn btn-sm btn-primary me-1"
+          onClick={() =>
+          setSelectServices(selectServices.filter(item => item.value !== row.value))
+        }
+            >Eliminar</button>
+            </div>
+          )
         }
 
 
@@ -66,7 +81,11 @@ return (
             highlightOnHover
             striped
             theme="custom"
-            
+            noDataComponent={
+          <div className="text-center m-2">
+            <p>No hay pedidos disponibles</p>
+          </div>
+        }
           
         />  
         <div>

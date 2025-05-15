@@ -116,6 +116,7 @@ const ListadoPedidos = ({ isAuthenticated }) => {
         theme="custom"
         expandableRows
         expandableRowsComponent={DetallePedido}
+        
       />
       <button className="col-md-2 btn btn-primary">
       <NavLink className="nav-link" to="/CreatePedidos">Crear Pedido</NavLink>

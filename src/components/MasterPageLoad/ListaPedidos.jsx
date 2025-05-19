@@ -1,6 +1,6 @@
 import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
-import {NavLink} from  'react-router-dom'
+import {NavLink,useNavigate} from  'react-router-dom'
 
 // Creamos el tema custom una vez
 createTheme("custom", {
@@ -102,7 +102,32 @@ const ListadoPedidos = ({ isAuthenticated }) => {
       name: "Comentarios",
       selector: (row) => row.comments,
     },
+       {
+        name:"Acciones",
+        cell:(row)=>(
+            <div className="d-flex justify-content-end gap-2">
+            <button
+              className="btn btn-sm btn-primary me-1"
+              onClick={() => handleVer(row)}
+            >
+              Ver
+            </button>
+            <button
+              className="btn btn-sm btn-warning me-1"
+              onClick={() => handleEditar(row)}
+            >Editar</button>
+            </div>
+        )
+    }
   ];
+   const navigate=useNavigate()
+  const handleEditar=(row)=>{
+    navigate("/CreatePedidos/"+row.appointmentId)
+  }
+  const handleVer=()=>{
+    console.log("este es el boton de ver")
+    
+  }
 
   return (
     <div className="card shadow-sm p-2 mt-3">

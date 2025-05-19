@@ -7,26 +7,66 @@ import {setDefaultLocale,registerLocale} from 'react-datepicker'
 import es from 'date-fns/locale/es';
 import "react-datepicker/dist/react-datepicker.css";
 import {CreatePedidosDetails} from '../PedidosDetails/CreatePedidosDetails.jsx'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
+import { ca } from 'date-fns/locale';
 
 const CreatePedidos = ({isAuthenticated}) => {
 
-  const {id} =useParams();
+  const {appointmentId} =useParams();
+  console.log("Este es el appointmentId: ", appointmentId)
 
-    const [formData, setFormData] = useState({
-        AppointmentDate: new Date(),
-        Comments  : '',
-        Vehicle: 0,
-        Employee: 0,
-        Services:[]
-    });
+
+
+      const [formData, setFormData] = useState({
+          AppointmentDate: new Date(),
+          Comments  : '',
+          Vehicle: 0,
+          Employee: 0,
+          Services:[]
+      });
     const [dataVehicle, setDataVehicle] = useState([]);
     const [dataCustomer, setDataCustomer] = useState([]);
     const [dataServicio,setDataServicio]=useState([])
 
 registerLocale('es', es); // Registra el locale español
 setDefaultLocale('es'); // Establece el locale por defecto a español
-    useEffect(() => {
+
+        useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const tokenRecibido = localStorage.getItem("token");
+      
+            const response = await fetch("https://localhost:7184/api/PaginaBase/customer", {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${tokenRecibido}`,
+                "Content-Type": "application/json",
+              },
+            });
+      
+            if (!response.ok) {
+              throw new Error("Ha ocurrido un error");
+            }
+      
+            const data = await response.json();
+      console.log("Esta es la data del Customer bruto:", data);
+            const dataCustomerBruto = data.map(item => ({
+              value: item.customerId,
+              label: item.nombreCustomer,
+            }));
+            setDataCustomer(dataCustomerBruto);
+      
+            console.log("Esta es la data del customer:", dataCustomerBruto);
+        
+      
+          } catch (error) {
+            console.error("Error al obtener los datos:", error);
+          }
+        };
+      
+        fetchData();
+      }, [isAuthenticated]);
+         useEffect(() => {
         const fetchData = async () => {
           try {
             const tokenRecibido = localStorage.getItem("token");
@@ -62,79 +102,8 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
         fetchData();
       }, [isAuthenticated]);
 
-    const navigate=useNavigate()
-      const EnvioData = async () => {
-        try {
-          console.log("Este es el formData: ", formData);
 
-          const tokenRecibido = localStorage.getItem("token");
-          const response = await fetch("https://localhost:7184/api/Appointment", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              appointmentdate: formData.AppointmentDate,
-              comments: formData.Comments,
-              vehicle: formData.Vehicle?.value || formData.Vehicle,
-              employee: formData.Employee?.value || formData.Employee,
-              services: formData.Services.map((service) => ({
-                serviceId: service.value,
-              })),
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Ha ocurrido un error");
-          }
-
-          navigate("/ListaPedidos");
-        } catch (error) {
-          console.error("Error al obtener los datos:", error);
-        }
-      };
-      
-
-          useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const tokenRecibido = localStorage.getItem("token");
-      
-            const response = await fetch("https://localhost:7184/api/PaginaBase/customer", {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${tokenRecibido}`,
-                "Content-Type": "application/json",
-              },
-            });
-      
-            if (!response.ok) {
-              throw new Error("Ha ocurrido un error");
-            }
-      
-            const data = await response.json();
-      console.log("Esta es la data del Customer bruto:", data);
-            const dataCustomerBruto = data.map(item => ({
-              value: item.customerId,
-              label: item.nombreCustomer,
-            }));
-            setDataCustomer(dataCustomerBruto);
-      
-            console.log("Esta es la data del customer:", dataCustomerBruto);
-        
-      
-          } catch (error) {
-            console.error("Error al obtener los datos:", error);
-          }
-        };
-      
-        fetchData();
-      }, [isAuthenticated]);
-
-
-
-            useEffect(() => {
+                 useEffect(() => {
         const fetchData = async () => {
           try {
             const tokenRecibido = localStorage.getItem("token");
@@ -171,9 +140,103 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
         fetchData();
       }, [isAuthenticated]);
       
+  useEffect(() => {
+
+    const tokenRecibido = localStorage.getItem("token");   
+    if (dataVehicle.length && dataCustomer.length && dataServicio.length) {
+    if (appointmentId!== undefined && appointmentId !== null) {
+      console.log("Este es el appoiment en el fetch: ", appointmentId)
+ const fetchData = async () => {
+      try {
+        const response =await fetch(`https://localhost:7184/api/Appointment/${appointmentId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${tokenRecibido}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok){
+          throw new Error ("Ha ocurrido un error")
+        }
+              const data = await response.json();
+              const vehicleSelected = dataVehicle.find(v => v.value === data.vehicleId);
+const employeeSelected = dataCustomer.find(c => c.value === data.employeeId);
+const servicesSelected = data.serviceId.map((service) =>dataServicio.find(s=>s.value===service))
+
+              setFormData({
+                AppointmentDate: new Date(),
+                Comments: data.comments,
+                Vehicle: vehicleSelected,
+                Employee: employeeSelected,
+                Services:servicesSelected
+                
+              }); 
+              console.log("Este es el dataVehicle: ", data.vehicleId);
+      console.log("Esta es la data del formData:", formData);
+      
+      } catch (error) {
+        console.error("Error al obtener los datos:", error);
+      }
+     }
+     fetchData();
+    }
+  }
+    
+  },[appointmentId, dataVehicle, dataCustomer,dataServicio]);
+
+
+ 
+
+    const navigate=useNavigate()
+ 
+    const EnvioData = async () => {
+  try {
+    console.log("Este es el formData: ", formData);
+    const tokenRecibido = localStorage.getItem("token");
+
+    const url = appointmentId !== undefined && appointmentId !== null
+      ? `https://localhost:7184/api/Appointment/${appointmentId}`
+      : "https://localhost:7184/api/Appointment";
+
+    const metodo = appointmentId !== undefined && appointmentId !== null ? "PUT" : "POST";
+
+    const body = {
+      appointmentdate: formData.AppointmentDate,
+      comments: formData.Comments,
+      vehicle: formData.Vehicle?.value || formData.Vehicle,
+      employee: formData.Employee?.value || formData.Employee,
+      services: formData.Services.map((service) => ({
+        serviceId: service.value,
+      })),
+    };
+
+    if (appointmentId !== undefined && appointmentId !== null) {
+      body.appointmentId = appointmentId;
+    }
+
+    const response = await fetch(url, {
+      method: metodo,
+      headers: {
+        Authorization: `Bearer ${tokenRecibido}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error("Ha ocurrido un error");
+    }
+
+    navigate("/ListaPedidos");
+  } catch (error) {
+    console.error("Error al obtener los datos:", error);
+  }
+};
+
+
     const handleChange = (e,value) => {
         
-        setFormData({ ...formData, Comments: value });
+        setFormData({ ...formData, Comments: value });  
     };
 
     const handleEmployeeChange = (event, value) => {
@@ -340,11 +403,11 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
     })
   }}
 />
-  <CreatePedidosDetails setSelectServices={(selectOption)=>setFormData({...formData, Services:selectOption})} 
+   <CreatePedidosDetails setSelectServices={(selectOption)=>setFormData({...formData, Services:selectOption})} 
   selectServices={formData.Services}/>
    </div>
    <div>
- 
+
 
    </div>
       </div>

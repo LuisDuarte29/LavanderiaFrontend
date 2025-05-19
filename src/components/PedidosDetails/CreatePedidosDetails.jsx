@@ -34,8 +34,7 @@ useEffect(()=>{
   setPrecio(selectServices.reduce((acc,item)=>acc+ parseInt(item.priceItem),0))
 },[selectServices])
 
-console.log("Este seria el selectServices: ",selectServices)
-const iterar=selectServices.map((item)=>{console.log("Estos serian los iterar: ", item.value)})
+
 
     const column= [
         {

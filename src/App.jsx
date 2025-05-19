@@ -115,7 +115,7 @@ const App = () => {
     }
   />
   <Route 
-  path="/CreatePedidos/:id" 
+  path="/CreatePedidos/:appointmentId" 
   element={
     isAuthenticated ? (
       <>

@@ -65,7 +65,7 @@ const Lista = ({ data }) => {
   ];
  const navigate=useNavigate()
   const handleEditar=()=>{
-    navigate("/CreatePedidos/"+row.id)
+     console.log("este es el boton de ver")
   }
   const handleVer=()=>{
     console.log("este es el boton de ver")

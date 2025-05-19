@@ -1,14 +1,12 @@
 import { useState,useEffect } from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import Select from 'react-select'
 import DatePicker from 'react-datepicker'
 import {setDefaultLocale,registerLocale} from 'react-datepicker'
 import es from 'date-fns/locale/es';
 import "react-datepicker/dist/react-datepicker.css";
-import {CreatePedidosDetails} from '../PedidosDetails/CreatePedidosDetails.jsx'
+import {CreatePedidosDetails} from './PedidosDetails/CreatePedidosDetails';
 import {useNavigate, useParams} from 'react-router-dom'
-import { ca } from 'date-fns/locale';
+import {DateTime} from 'luxon'
 
 const CreatePedidos = ({isAuthenticated}) => {
 
@@ -162,9 +160,10 @@ setDefaultLocale('es'); // Establece el locale por defecto a español
               const vehicleSelected = dataVehicle.find(v => v.value === data.vehicleId);
 const employeeSelected = dataCustomer.find(c => c.value === data.employeeId);
 const servicesSelected = data.serviceId.map((service) =>dataServicio.find(s=>s.value===service))
-
+const fechaFormateada=DateTime.fromISO(data.appointmentDate).toJSDate()
+console.log("Este es la fecha traida del back: ", fechaFormateada)
               setFormData({
-                AppointmentDate: new Date(),
+                AppointmentDate: fechaFormateada,
                 Comments: data.comments,
                 Vehicle: vehicleSelected,
                 Employee: employeeSelected,
@@ -195,13 +194,17 @@ const servicesSelected = data.serviceId.map((service) =>dataServicio.find(s=>s.v
     const tokenRecibido = localStorage.getItem("token");
 
     const url = appointmentId !== undefined && appointmentId !== null
-      ? `https://localhost:7184/api/Appointment/${appointmentId}`
+      ? "https://localhost:7184/api/Appointment"
       : "https://localhost:7184/api/Appointment";
 
     const metodo = appointmentId !== undefined && appointmentId !== null ? "PUT" : "POST";
+const fechaISO = DateTime
+  .fromJSDate(formData.AppointmentDate)
+  .setZone('America/Asuncion')
+  .toISO(); // Ej: "2025-05-19T17:18:03.000-03:00"
 
     const body = {
-      appointmentdate: formData.AppointmentDate,
+      appointmentdate:fechaISO,
       comments: formData.Comments,
       vehicle: formData.Vehicle?.value || formData.Vehicle,
       employee: formData.Employee?.value || formData.Employee,
@@ -263,7 +266,7 @@ const servicesSelected = data.serviceId.map((service) =>dataServicio.find(s=>s.v
             onChange={(select=> setFormData({...formData,AppointmentDate:select}))} 
             dateFormat="dd-MM-yyyy"
             className='form-control'
-                 locale="es"  // Aplica el locale en español
+      
                 dropdownMode="select"
                   styles={{
     control: (base) => ({

@@ -5,8 +5,8 @@ import LoginForm from './components/Login/LoginForm'; // Componente de Login
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Lista from './components/MasterPageLoad/Lista'
-import ListaPedidos from './components/MasterPageLoad/ListaPedidos'; // Componente de ListaPedidos
-import CreatePedidos from './components/MasterPageLoad/CreatePedidos';
+import ListaPedidos from './components/Pedidos/ListaPedidos'; // Componente de ListaPedidos
+import CreatePedidos from './components/Pedidos/CreatePedidos';
 
 const App = () => {
   const [data, setData] = useState([]); // Datos a obtener de la API

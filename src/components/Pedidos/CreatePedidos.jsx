@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react';
+import { useState,useEffect,useContext } from 'react';
 import Select from 'react-select'
 import DatePicker from 'react-datepicker'
 import {setDefaultLocale,registerLocale} from 'react-datepicker'
@@ -7,21 +7,15 @@ import "react-datepicker/dist/react-datepicker.css";
 import {CreatePedidosDetails} from './PedidosDetails/CreatePedidosDetails';
 import {useNavigate, useParams} from 'react-router-dom'
 import {DateTime} from 'luxon'
+import { ServicesContext } from '../../context/ServicesContext';
 
 const CreatePedidos = ({isAuthenticated}) => {
 
   const {appointmentId} =useParams();
   console.log("Este es el appointmentId: ", appointmentId)
+    const {formData, setFormData}=useContext(ServicesContext);
 
 
-
-      const [formData, setFormData] = useState({
-          AppointmentDate: new Date(),
-          Comments  : '',
-          Vehicle: 0,
-          Employee: 0,
-          Services:[]
-      });
     const [dataVehicle, setDataVehicle] = useState([]);
     const [dataCustomer, setDataCustomer] = useState([]);
     const [dataServicio,setDataServicio]=useState([])

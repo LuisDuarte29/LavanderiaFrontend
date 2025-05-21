@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import DataTable,{createTheme} from 'react-data-table-component'
+import { useContext } from 'react';
+import { ServicesContext } from '../../../context/ServicesContext';
+
 
 
 createTheme("custom", {
@@ -29,10 +32,12 @@ createTheme("custom", {
 });
 
 export function CreatePedidosDetails({ setSelectServices, selectServices }) {
+
+const { formData, setFormData } = useContext(ServicesContext);
 const [precio,setPrecio]=useState(0)
 useEffect(()=>{  
-  setPrecio(selectServices.reduce((acc,item)=>acc+ parseInt(item.priceItem),0))
-},[selectServices])
+  setPrecio(formData.Services.reduce((acc,item)=>acc+ parseInt(item.priceItem),0))
+},[formData.Services])
 
 
 
@@ -60,7 +65,7 @@ useEffect(()=>{
             <button
               className="btn btn-sm btn-primary me-1"
           onClick={() =>
-          setSelectServices(selectServices.filter(item => item.value !== row.value))
+          setFormData(prev=> ({...prev, Services:formData.Services.filter(item => item.value !== row.value)}))
         }
             >Eliminar</button>
             </div>

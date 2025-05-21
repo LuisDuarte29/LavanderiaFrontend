@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Routes,Route, Navigate} from 'react-router-dom'
 import LoginForm from './components/Login/LoginForm'; // Componente de Login
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import Lista from './components/MasterPageLoad/Lista'
+import Lista from './components/Customers/Lista'
 import ListaPedidos from './components/Pedidos/ListaPedidos'; // Componente de ListaPedidos
 import CreatePedidos from './components/Pedidos/CreatePedidos';
 
@@ -52,6 +52,7 @@ const App = () => {
   };
 
   return (
+  
 <Router>
 <div className='container-fluid min-vh-100 min-vw-100'>
   

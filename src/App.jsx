@@ -4,9 +4,10 @@ import {BrowserRouter as Router, Routes,Route, Navigate} from 'react-router-dom'
 import LoginForm from './components/Login/LoginForm'; // Componente de Login
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import Lista from './components/Customers/Lista'
+import Lista from './components/Customers/ListaCustomer'
 import ListaPedidos from './components/Pedidos/ListaPedidos'; // Componente de ListaPedidos
 import CreatePedidos from './components/Pedidos/CreatePedidos';
+import CreateCustomer from './components/Customers/CreateCustomer';
 
 const App = () => {
   const [data, setData] = useState([]); // Datos a obtener de la API
@@ -142,7 +143,19 @@ const App = () => {
       )
     }
   />
-
+  <Route 
+    path="/CreateCustomer" 
+    element={
+      isAuthenticated ? (
+        <>
+          <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+          <CreateCustomer/> {/* Asegúrate de importar este componente */}
+        </>
+      ) : (
+        <Navigate to="/login" replace />
+      )
+    }
+  />
 </Routes>
    
     </div>

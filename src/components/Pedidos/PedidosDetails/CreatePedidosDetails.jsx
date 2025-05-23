@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import DataTable,{createTheme} from 'react-data-table-component'
 import { useContext } from 'react';
 import { ServicesContext } from '../../../context/ServicesContext';
+import {PrecioTotalPedidos} from '../PedidosDetails/PrecioTotalPedidos';
+
 
 
 
@@ -31,13 +33,9 @@ createTheme("custom", {
   },
 });
 
-export function CreatePedidosDetails({ setSelectServices, selectServices }) {
+export function CreatePedidosDetails() {
 
 const { formData, setFormData } = useContext(ServicesContext);
-const [precio,setPrecio]=useState(0)
-useEffect(()=>{  
-  setPrecio(formData.Services.reduce((acc,item)=>acc+ parseInt(item.priceItem),0))
-},[formData.Services])
 
 
 
@@ -80,7 +78,7 @@ return (
         <h4 className='mb-2 d-flex justify-content-center'>Lista de Servicios</h4>
         <DataTable
             columns={column}
-            data={selectServices}
+            data={formData.Services}
             pagination
             highlightOnHover
             striped
@@ -93,7 +91,7 @@ return (
           
         />  
         <div>
-            <h4 className='mt-1 d-flex justify-content-end align-content-end p-2'>Total:{precio}</h4>
+        <PrecioTotalPedidos/>
         </div>
     </div>
 

@@ -1,6 +1,6 @@
 import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigate,NavLink} from "react-router-dom";
 
 // 1. Crear el tema personalizado FUERA del componente
 createTheme('custom', {
@@ -28,8 +28,40 @@ createTheme('custom', {
     secondary: '#2ecc71',
   },
 });
+  useEffect(() => {
+    const fechData=async ()=>{
 
-const Lista = ({ data }) => {      
+
+      const tokenRecibido=localStorage.getItem("token");
+      console.log(tokenRecibido)
+    await fetch('https://localhost:7184/api/Customer', {
+        method:"GET",
+        headers:{
+          "Authorization":`Bearer ${tokenRecibido}`,
+          "Content-Type":"application/json"
+        }
+      }).then(response=>{
+          if(!response.ok){
+            throw new Error("Ha ocurrido un error")
+          }
+          return response.json();
+      }).then(data=>{
+       setData(data)
+        console.log("Este es la data del customer: " + data)
+      })
+      .catch(error=>{
+        console.error("Error al obtener los datos:", error)
+      })
+    }
+    if (isAuthenticated){
+      fechData();
+    }
+
+      
+
+  }, [isAuthenticated]); // Este efecto solo se ejecutará cuando cambie el estado de autenticación
+
+const Lista = ({ }) => {      
   const columnas = [
     {
       name: "ID",
@@ -83,7 +115,13 @@ const Lista = ({ data }) => {
         striped
         theme="custom"
       />
+      <div>
+              <button className="col-md-2 btn btn-primary">
+      <NavLink className="nav-link" to="/CreateCustomer">Crear Cliente</NavLink>
+      </button>
+      </div>
     </div>
+
   );
 };
 

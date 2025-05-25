@@ -14,38 +14,6 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
 
   // UseEffect que se ejecuta solo después de que el usuario esté autenticado
-  useEffect(() => {
-    const fechData=async ()=>{
-
-
-      const tokenRecibido=localStorage.getItem("token");
-      console.log(tokenRecibido)
-    await fetch('https://localhost:7184/api/Customer', {
-        method:"GET",
-        headers:{
-          "Authorization":`Bearer ${tokenRecibido}`,
-          "Content-Type":"application/json"
-        }
-      }).then(response=>{
-          if(!response.ok){
-            throw new Error("Ha ocurrido un error")
-          }
-          return response.json();
-      }).then(data=>{
-       setData(data)
-        console.log("Este es la data del customer: " + data)
-      })
-      .catch(error=>{
-        console.error("Error al obtener los datos:", error)
-      })
-    }
-    if (isAuthenticated){
-      fechData();
-    }
-
-      
-
-  }, [isAuthenticated]); // Este efecto solo se ejecutará cuando cambie el estado de autenticación
 
   // Maneja la autenticación
   const handleLogin = (isLoggedIn) => {
@@ -83,7 +51,7 @@ const App = () => {
       isAuthenticated ? (
         <>
           <Navbar setautenticated={setIsAuthenticated}/>{/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-          <Lista data={data} /> {/* Pasa los datos a la lista */}
+          <Lista /> {/* Pasa los datos a la lista */}
         </>
       ) : (
         <Navigate to="/login" replace />
@@ -136,7 +104,7 @@ const App = () => {
       isAuthenticated ? (
         <>
           <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-          <Lista data={data}/> {/* Asegúrate de importar este componente */}
+          <Lista/> {/* Asegúrate de importar este componente */}
         </>
       ) : (
         <Navigate to="/login" replace />

@@ -2,10 +2,6 @@ import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useParams,
   useNavigate,
   NavLink,
 } from "react-router-dom";

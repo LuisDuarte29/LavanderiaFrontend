@@ -51,7 +51,7 @@ const App = () => {
       isAuthenticated ? (
         <>
           <Navbar setautenticated={setIsAuthenticated}/>{/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-          <Lista /> {/* Pasa los datos a la lista */}
+          <Lista isAuthenticated={isAuthenticated} />
         </>
       ) : (
         <Navigate to="/login" replace />
@@ -104,7 +104,7 @@ const App = () => {
       isAuthenticated ? (
         <>
           <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-          <Lista/> {/* Asegúrate de importar este componente */}
+          <Lista isAuthenticated={isAuthenticated}/> {/* Asegúrate de importar este componente */}
         </>
       ) : (
         <Navigate to="/login" replace />

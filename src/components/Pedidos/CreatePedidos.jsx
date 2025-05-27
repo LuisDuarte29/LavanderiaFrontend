@@ -8,6 +8,7 @@ import { CreatePedidosDetails } from "./PedidosDetails/CreatePedidosDetails";
 import { useNavigate, useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ServicesContext } from "../../context/ServicesContext";
+import { toast } from "react-toastify"; 
 
 const CreatePedidos = ({ isAuthenticated }) => {
   const { appointmentId } = useParams();
@@ -228,10 +229,12 @@ const CreatePedidos = ({ isAuthenticated }) => {
       if (!response.ok) {
         throw new Error("Ha ocurrido un error");
       }
+      toast.success("El elemento pedidos se ha creado con exito")
+
 
       navigate("/ListaPedidos");
     } catch (error) {
-      console.error("Error al obtener los datos:", error);
+     toast.error("Ocurrio un error al crear el pedido")
     }
   };
 

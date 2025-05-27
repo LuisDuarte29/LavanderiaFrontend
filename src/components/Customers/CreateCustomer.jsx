@@ -2,6 +2,7 @@ import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { ServicesContext } from "../../context/ServicesContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function CreateCustomer() {
   const { formDataCustomer, setFormDataCustomer } = useContext(ServicesContext);
@@ -29,6 +30,8 @@ const navigate = useNavigate();
       if (!response.ok) {
         throw new Error("Error al crear el cliente");
       }
+         toast.success("✅ Elemento creado con éxito!");
+
       setFormDataCustomer({
               FirstName: '',
            LastName: '',
@@ -36,9 +39,11 @@ const navigate = useNavigate();
            Phone: '',
             Address: ''
       })
-      navigate("/ListaCustomer");
+        setTimeout(() => {
+        navigate("/ListaCustomer");
+      }, 500);
     } catch (error) {
-      console.error("Error al obtener los datos:", error);
+      toast.error("Error al obtener los datos:", error);
     }
   };
 

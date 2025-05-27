@@ -8,6 +8,7 @@ import Lista from './components/Customers/ListaCustomer'
 import ListaPedidos from './components/Pedidos/ListaPedidos'; // Componente de ListaPedidos
 import CreatePedidos from './components/Pedidos/CreatePedidos';
 import CreateCustomer from './components/Customers/CreateCustomer';
+import {ToastContainer,toast} from "react-toastify"
 
 const App = () => {
   const [data, setData] = useState([]); // Datos a obtener de la API
@@ -125,7 +126,14 @@ const App = () => {
     }
   />
 </Routes>
-   
+   <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+        />
     </div>
 </Router>
  

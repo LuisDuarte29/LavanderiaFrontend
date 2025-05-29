@@ -9,13 +9,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ServicesContext } from "../../context/ServicesContext";
 import { toast } from "react-toastify"; 
+import {useListaVehicle} from "../../Hooks/useListaVehicle";  
 
 const CreatePedidos = ({ isAuthenticated }) => {
   const { appointmentId } = useParams();
   console.log("Este es el appointmentId: ", appointmentId);
   const { formData, setFormData } = useContext(ServicesContext);
 
-  const [dataVehicle, setDataVehicle] = useState([]);
   const [dataCustomer, setDataCustomer] = useState([]);
   const [dataServicio, setDataServicio] = useState([]);
 
@@ -58,42 +58,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
 
     fetchData();
   }, [isAuthenticated]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokenRecibido = localStorage.getItem("token");
-
-        const response = await fetch(
-          "https://localhost:7184/api/PaginaBase/vehicle",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Ha ocurrido un error");
-        }
-
-        const data = await response.json();
-        console.log("Esta es la data del vehicle bruto:", data);
-        const dataVehicleBruto = data.map((item) => ({
-          value: item.idVehicle,
-          label: item.vehicleName,
-        }));
-        setDataVehicle(dataVehicleBruto);
-
-        console.log("Esta es la data del vehicle:", dataVehicleBruto);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
-
-    fetchData();
-  }, [isAuthenticated]);
+  const {dataVehicle1} = useListaVehicle(isAuthenticated);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -135,7 +100,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
 
   useEffect(() => {
     const tokenRecibido = localStorage.getItem("token");
-    if (dataVehicle.length && dataCustomer.length && dataServicio.length) {
+    if (dataVehicle1.length && dataCustomer.length && dataServicio.length) {
       if (appointmentId !== undefined && appointmentId !== null) {
         console.log("Este es el appoiment en el fetch: ", appointmentId);
         const fetchData = async () => {
@@ -154,7 +119,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
               throw new Error("Ha ocurrido un error");
             }
             const data = await response.json();
-            const vehicleSelected = dataVehicle.find(
+            const vehicleSelected = dataVehicle1.find(
               (v) => v.value === data.vehicleId
             );
             const employeeSelected = dataCustomer.find(
@@ -183,7 +148,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
         fetchData();
       }
     }
-  }, [appointmentId, dataVehicle, dataCustomer, dataServicio]);
+  }, [appointmentId, dataVehicle1, dataCustomer, dataServicio]);
 
   const navigate = useNavigate();
 
@@ -229,6 +194,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
       if (!response.ok) {
         throw new Error("Ha ocurrido un error");
       }
+    
       toast.success("El elemento pedidos se ha creado con exito")
 
 
@@ -305,7 +271,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
                 <div>
                   <Select
                     className="bg-white mt-2"
-                    options={dataVehicle}
+                    options={dataVehicle1}
                     value={formData.Vehicle}
                     onChange={(selectedOption) =>
                       setFormData({ ...formData, Vehicle: selectedOption })

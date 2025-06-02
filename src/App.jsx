@@ -8,6 +8,7 @@ import Lista from './components/Customers/ListaCustomer'
 import ListaPedidos from './components/Pedidos/ListaPedidos'; // Componente de ListaPedidos
 import CreatePedidos from './components/Pedidos/CreatePedidos';
 import CreateCustomer from './components/Customers/CreateCustomer';
+import ArticulosFaltantes from './components/Inventario/ArticulosFaltantes';
 
 const App = () => {
   const [data, setData] = useState([]); // Datos a obtener de la API
@@ -118,6 +119,20 @@ const App = () => {
         <>
           <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
           <CreateCustomer/> {/* Asegúrate de importar este componente */}
+        </>
+      ) : (
+        <Navigate to="/login" replace />
+      )
+    }
+  />
+
+    <Route 
+    path="/ArticulosFaltantes" 
+    element={
+      isAuthenticated ? (
+        <>
+          <Navbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+          <ArticulosFaltantes/> {/* Asegúrate de importar este componente */}
         </>
       ) : (
         <Navigate to="/login" replace />

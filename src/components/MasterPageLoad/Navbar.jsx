@@ -25,6 +25,9 @@ const Navbar = ({setautenticated}) => {
             <li className="nav-item">
             <NavLink className="nav-link" to="/ListaCustomer">Lista Customers</NavLink>
             </li>
+              <li className="nav-item">
+            <NavLink className="nav-link" to="/ArticulosFaltantes">Articulos Faltantes</NavLink>
+            </li>
             <li className="nav-item">
               <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
             </li>

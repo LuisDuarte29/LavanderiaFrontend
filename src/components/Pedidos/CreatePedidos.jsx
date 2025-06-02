@@ -10,93 +10,21 @@ import { DateTime } from "luxon";
 import { ServicesContext } from "../../context/ServicesContext";
 import { toast } from "react-toastify"; 
 import {useListaVehicle} from "../../Hooks/useListaVehicle";  
+import {useCustomerGet} from "../../Hooks/useCustomerGet";   
+import { useServiciosGet } from "../../Hooks/useServiciosGet";
 
 const CreatePedidos = ({ isAuthenticated }) => {
   const { appointmentId } = useParams();
   console.log("Este es el appointmentId: ", appointmentId);
   const { formData, setFormData } = useContext(ServicesContext);
 
-  const [dataCustomer, setDataCustomer] = useState([]);
-  const [dataServicio, setDataServicio] = useState([]);
-
   registerLocale("es", es); // Registra el locale español
   setDefaultLocale("es"); // Establece el locale por defecto a español
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokenRecibido = localStorage.getItem("token");
-
-        const response = await fetch(
-          "https://localhost:7184/api/PaginaBase/customer",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Ha ocurrido un error");
-        }
-
-        const data = await response.json();
-        console.log("Esta es la data del Customer bruto:", data);
-        const dataCustomerBruto = data.map((item) => ({
-          value: item.customerId,
-          label: item.nombreCustomer,
-        }));
-        setDataCustomer(dataCustomerBruto);
-
-        console.log("Esta es la data del customer:", dataCustomerBruto);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
-
-    fetchData();
-  }, [isAuthenticated]);
+  const { dataCustomer } = useCustomerGet(isAuthenticated) 
   const {dataVehicle1} = useListaVehicle(isAuthenticated);
+const { dataServicio } = useServiciosGet(isAuthenticated);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokenRecibido = localStorage.getItem("token");
-
-        const response = await fetch(
-          "https://localhost:7184/api/PaginaBase/servicios",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Ha ocurrido un error");
-        }
-
-        const data = await response.json();
-        console.log("Esta es la data del Servicio bruto:", data);
-        const dataServicioBruto = data.map((item) => ({
-          value: item.serviceId,
-          label: item.serviceName,
-          priceItem: item.precio,
-        }));
-        setDataServicio(dataServicioBruto);
-
-        console.log("Esta es la data del servicio:", dataServicioBruto);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
-
-    fetchData();
-  }, [isAuthenticated]);
 
   useEffect(() => {
     const tokenRecibido = localStorage.getItem("token");

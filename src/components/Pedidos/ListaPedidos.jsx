@@ -1,6 +1,7 @@
 import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
-import {NavLink,useNavigate} from  'react-router-dom'
+import { NavLink, useNavigate } from "react-router-dom";
+import { ProgressBar } from "../../Utils/ProgressBar";
 
 // Creamos el tema custom una vez
 createTheme("custom", {
@@ -32,14 +33,20 @@ createTheme("custom", {
 // Componente de fila expandible para ver servicios
 const DetallePedido = ({ data }) => {
   return (
-    <div className="p-3">
+    <div className="p-2 col-md-3">
       <h6>Servicios:</h6>
       <ul>
         {data.services && data.services.length > 0 ? (
           data.services.map((servicio) => (
-            <li key={servicio.serviceId}>
-              {servicio.serviceName} - ${servicio.price} -{" "}
-            
+            <li key={servicio.serviceId} className="mb-2">
+              <div className="row align-items-center">
+                <div className="col-4">
+                  <span>{servicio.serviceName}</span>
+                </div>
+                <div className="col-8">
+                  <ProgressBar estado={servicio.estado} />
+                </div>
+              </div>
             </li>
           ))
         ) : (
@@ -102,32 +109,33 @@ const ListadoPedidos = ({ isAuthenticated }) => {
       name: "Comentarios",
       selector: (row) => row.comments,
     },
-       {
-        name:"Acciones",
-        cell:(row)=>(
-            <div className="d-flex justify-content-end gap-2">
-            <button
-              className="btn btn-sm btn-primary me-1"
-              onClick={() => handleVer(row)}
-            >
-              Ver
-            </button>
-            <button
-              className="btn btn-sm btn-warning me-1"
-              onClick={() => handleEditar(row)}
-            >Editar</button>
-            </div>
-        )
-    }
+    {
+      name: "Acciones",
+      cell: (row) => (
+        <div className="d-flex justify-content-end gap-2">
+          <button
+            className="btn btn-sm btn-primary me-1"
+            onClick={() => handleVer(row)}
+          >
+            Ver
+          </button>
+          <button
+            className="btn btn-sm btn-warning me-1"
+            onClick={() => handleEditar(row)}
+          >
+            Editar
+          </button>
+        </div>
+      ),
+    },
   ];
-   const navigate=useNavigate()
-  const handleEditar=(row)=>{
-    navigate("/CreatePedidos/"+row.appointmentId)
-  }
-  const handleVer=()=>{
-    console.log("este es el boton de ver")
-    
-  }
+  const navigate = useNavigate();
+  const handleEditar = (row) => {
+    navigate("/CreatePedidos/" + row.appointmentId);
+  };
+  const handleVer = () => {
+    console.log("este es el boton de ver");
+  };
 
   return (
     <div className="card shadow-sm p-2 mt-3">
@@ -141,12 +149,12 @@ const ListadoPedidos = ({ isAuthenticated }) => {
         theme="custom"
         expandableRows
         expandableRowsComponent={DetallePedido}
-        
       />
       <button className="col-md-2 btn btn-primary">
-      <NavLink className="nav-link" to="/CreatePedidos">Crear Pedido</NavLink>
+        <NavLink className="nav-link" to="/CreatePedidos">
+          Crear Pedido
+        </NavLink>
       </button>
-      
     </div>
   );
 };

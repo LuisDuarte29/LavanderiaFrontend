@@ -8,133 +8,27 @@ import { CreatePedidosDetails } from "./PedidosDetails/CreatePedidosDetails";
 import { useNavigate, useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ServicesContext } from "../../context/ServicesContext";
+import { toast } from "react-toastify"; 
+import {useListaVehicle} from "../../Hooks/useListaVehicle";  
+import {useCustomerGet} from "../../Hooks/useCustomerGet";   
+import { useServiciosGet } from "../../Hooks/useServiciosGet";
 
 const CreatePedidos = ({ isAuthenticated }) => {
   const { appointmentId } = useParams();
   console.log("Este es el appointmentId: ", appointmentId);
   const { formData, setFormData } = useContext(ServicesContext);
 
-  const [dataVehicle, setDataVehicle] = useState([]);
-  const [dataCustomer, setDataCustomer] = useState([]);
-  const [dataServicio, setDataServicio] = useState([]);
-
   registerLocale("es", es); // Registra el locale español
   setDefaultLocale("es"); // Establece el locale por defecto a español
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokenRecibido = localStorage.getItem("token");
+  const { dataCustomer } = useCustomerGet(isAuthenticated) 
+  const {dataVehicle1} = useListaVehicle(isAuthenticated);
+const { dataServicio } = useServiciosGet(isAuthenticated);
 
-        const response = await fetch(
-          "https://localhost:7184/api/PaginaBase/customer",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Ha ocurrido un error");
-        }
-
-        const data = await response.json();
-        console.log("Esta es la data del Customer bruto:", data);
-        const dataCustomerBruto = data.map((item) => ({
-          value: item.customerId,
-          label: item.nombreCustomer,
-        }));
-        setDataCustomer(dataCustomerBruto);
-
-        console.log("Esta es la data del customer:", dataCustomerBruto);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
-
-    fetchData();
-  }, [isAuthenticated]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokenRecibido = localStorage.getItem("token");
-
-        const response = await fetch(
-          "https://localhost:7184/api/PaginaBase/vehicle",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Ha ocurrido un error");
-        }
-
-        const data = await response.json();
-        console.log("Esta es la data del vehicle bruto:", data);
-        const dataVehicleBruto = data.map((item) => ({
-          value: item.idVehicle,
-          label: item.vehicleName,
-        }));
-        setDataVehicle(dataVehicleBruto);
-
-        console.log("Esta es la data del vehicle:", dataVehicleBruto);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
-
-    fetchData();
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokenRecibido = localStorage.getItem("token");
-
-        const response = await fetch(
-          "https://localhost:7184/api/PaginaBase/servicios",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Ha ocurrido un error");
-        }
-
-        const data = await response.json();
-        console.log("Esta es la data del Servicio bruto:", data);
-        const dataServicioBruto = data.map((item) => ({
-          value: item.serviceId,
-          label: item.serviceName,
-          priceItem: item.precio,
-        }));
-        setDataServicio(dataServicioBruto);
-
-        console.log("Esta es la data del servicio:", dataServicioBruto);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
-
-    fetchData();
-  }, [isAuthenticated]);
 
   useEffect(() => {
     const tokenRecibido = localStorage.getItem("token");
-    if (dataVehicle.length && dataCustomer.length && dataServicio.length) {
+    if (dataVehicle1.length && dataCustomer.length && dataServicio.length) {
       if (appointmentId !== undefined && appointmentId !== null) {
         console.log("Este es el appoiment en el fetch: ", appointmentId);
         const fetchData = async () => {
@@ -153,7 +47,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
               throw new Error("Ha ocurrido un error");
             }
             const data = await response.json();
-            const vehicleSelected = dataVehicle.find(
+            const vehicleSelected = dataVehicle1.find(
               (v) => v.value === data.vehicleId
             );
             const employeeSelected = dataCustomer.find(
@@ -182,7 +76,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
         fetchData();
       }
     }
-  }, [appointmentId, dataVehicle, dataCustomer, dataServicio]);
+  }, [appointmentId, dataVehicle1, dataCustomer, dataServicio]);
 
   const navigate = useNavigate();
 
@@ -228,10 +122,13 @@ const CreatePedidos = ({ isAuthenticated }) => {
       if (!response.ok) {
         throw new Error("Ha ocurrido un error");
       }
+    
+      toast.success("El elemento pedidos se ha creado con exito")
+
 
       navigate("/ListaPedidos");
     } catch (error) {
-      console.error("Error al obtener los datos:", error);
+     toast.error("Ocurrio un error al crear el pedido")
     }
   };
 
@@ -302,7 +199,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
                 <div>
                   <Select
                     className="bg-white mt-2"
-                    options={dataVehicle}
+                    options={dataVehicle1}
                     value={formData.Vehicle}
                     onChange={(selectedOption) =>
                       setFormData({ ...formData, Vehicle: selectedOption })

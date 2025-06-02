@@ -2,13 +2,10 @@ import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useParams,
   useNavigate,
   NavLink,
 } from "react-router-dom";
+import {useListaCustomerGet} from "../../Hooks/useListaCustomerGet";
 
 // 1. Crear el tema personalizado FUERA del componente
 createTheme("custom", {
@@ -39,36 +36,34 @@ createTheme("custom", {
 
 
 const Lista = ({isAuthenticated}) => {
-    const [data, setData] = useState([]); // Datos a obtener de la API
-  useEffect(() => {
-  const fechData = async () => {
-    const tokenRecibido = localStorage.getItem("token");
-    console.log(tokenRecibido);
-    await fetch("https://localhost:7184/api/Customer", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${tokenRecibido}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Ha ocurrido un error");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setData(data);
-        console.log("Este es la data del customer: " + data);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los datos:", error);
-      });
-  };
-  if (isAuthenticated) {
-    fechData();
-  }
-}, [isAuthenticated]); // Este efecto solo se ejecutará cuando cambie el estado de autenticación
+
+  // Aquí se obtiene el estado de autenticación desde el componente padre
+  // y se pasa como prop al hook useListaCustomerGet para que me devuelva los datos de la api y reutilizar el 
+  // componente en otros lugares si es necesario.
+    const {data,err,loading} = useListaCustomerGet(isAuthenticated); // Obtener los datos de la API
+
+    if (!isAuthenticated){
+      return (
+        <div className="alert alert-danger" role="alert">
+          No tienes permiso para ver esta página. Por favor, inicia sesión.
+        </div>
+      );
+    }
+    if (loading) {
+      return (
+        <div className="alert alert-info" role="alert">
+          Cargando datos...
+        </div>
+      );
+    }
+    if (err!=null) {
+      return (
+        <div className="alert alert-danger" role="alert">
+          Ha ocurrido un error al cargar los datos: {err.message}
+        </div>
+      );
+    }
+    console.log("Este es el data de la lista: " + data);
   const columnas = [
     {
       name: "ID",

@@ -162,7 +162,7 @@ const ListaForm=lazy(() => import('./components/Customers/ListaCustomer')); // C
         <Suspense fallback={<Lazy />}>
         <>
           <LazyNavbar setautenticated={setIsAuthenticated}/> {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-          <CreateCustomerForm/> {/* Asegúrate de importar este componente */}
+          <ArticulosFaltantes/> {/* Asegúrate de importar este componente */}
         </>
         </Suspense>
       ) : (

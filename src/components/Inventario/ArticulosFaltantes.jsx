@@ -2,10 +2,15 @@ import { set } from 'date-fns';
 import React from 'react'
 import { useState,useEffect } from 'react';
 import DataTable,{createTheme} from 'react-data-table-component'
+import  Select  from 'react-select';
+import { Counter } from '../../Utils/Counter';
+
 
 function ArticulosFaltantes() {
     
     const [articulos, setArticulos] = useState([]); 
+    const [articulosSeleccionados, setArticulosSeleccionados] = useState([]);
+    console.log("Estos son los articulos seleccionados:", articulosSeleccionados);
     const FECH_API_ARTICULOS="https://localhost:7184/api/Service/Articulos";
     useEffect(()=>{
         const tokenRecibido = localStorage.getItem("token");
@@ -22,13 +27,21 @@ function ArticulosFaltantes() {
                     throw new Error("Error al obtener los articulos")
                 }
                 const data =await response.json();
-                setArticulos(data);
-                console.log("Estos son los articulos:", data);
+
+                const dataArticulosSelect=data.map(item=>({
+                    value:item.idArticulo,
+                    label:item.nombreArticulo,
+                    precio:item.precio
+                }));
+                setArticulos(dataArticulosSelect);
+                console.log("Estos son los articulos todos:", data);
             }catch (error) {
                 console.error("Error al obtener los artículos:", error);
             }
            } 
-
+if (tokenRecibido) {
+    fetchArticulos();
+}
 
     },[])
 
@@ -61,16 +74,21 @@ function ArticulosFaltantes() {
     const columns=[
         {
             name: 'IdArticulo',
-            selector:row=>row.idArticulo,
+            selector:row=>row.value,
             sortable:true
         },
         {
             name:'NombreArticulo',
-            selector:row=>row.nombreArticulo,
+            selector:row=>row.label,
             sortable:true
         }
         ,
-      
+      {
+      name:'Cantidad',
+      cell:row=>(
+        <Counter />
+      ), 
+      },
         {
             name:'PrecioTotal',
             selector:row=>row.precio,
@@ -83,7 +101,7 @@ function ArticulosFaltantes() {
             <button
               className="btn btn-sm btn-primary me-1"
           onClick={() =>
-        setArticulos(articulos.filter(articulo=>articulo.idArticulo!==row.idArticulo))
+        setArticulos(articulosSeleccionados.filter(articulo=>articulo.value!==row.value))
         }
             >Eliminar</button>
             </div>
@@ -95,9 +113,41 @@ function ArticulosFaltantes() {
   return (
       <div className='card shadow-sm mt-1'>
         <h4 className='mb-2 d-flex justify-content-center'>Lista de Servicios</h4>
+        <Select
+          className="bg-white"
+          options={articulos}
+          value={articulosSeleccionados}
+          onChange={(selectedOption) =>
+            setArticulosSeleccionados( selectedOption )
+          }
+        
+          placeholder="Elige..."
+          isSearchable
+          isMulti
+          noOptionsMessage={() => "No hay opciones"}
+          styles={{
+            control: (base) => ({
+              ...base,
+              border: "2px solid #4a90e2",
+              backgroundColor: "#fff", // fondo del control
+            }),
+            menu: (base) => ({
+              ...base,
+              backgroundColor: "#fff", // fondo del menú
+              opacity: 1, // asegura que no sea transparente
+              zIndex: 100, // por si se oculta detrás de otros elementos
+            }),
+            option: (base, state) => ({
+              ...base,
+              backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
+              color: "#000",
+            }),
+          }}
+        />
+
             <DataTable
-            columns={column}
-            data={formData.Services}
+            columns={columns}
+            data={articulosSeleccionados}
             pagination
             highlightOnHover
             striped
@@ -108,6 +158,7 @@ function ArticulosFaltantes() {
           </div>
         }
             />
+
     </div>
   )
 }

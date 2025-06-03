@@ -7,6 +7,7 @@ export const ServicesContext=createContext();
 export function ServicesProvider ({children}){
 
  const [precio,setPrecio]=useState(0)
+   const [count, setCount] = useState(1);
        const [formData, setFormData] = useState({
            AppointmentDate: new Date(),
            Comments  : '',
@@ -26,7 +27,7 @@ useEffect(()=>{
 },[formData.Services])
 
     return(
-        <ServicesContext.Provider value={{formData, setFormData,precio,setPrecio, formDataCustomer, setFormDataCustomer}}>
+        <ServicesContext.Provider value={{formData, setFormData,precio,setPrecio, formDataCustomer, setFormDataCustomer,count,setCount}}>
             {children}
         </ServicesContext.Provider>
     )

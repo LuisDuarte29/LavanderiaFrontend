@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import Select from "react-select";
 import { Counter } from "../../Utils/Counter";
-import { useContext } from 'react';
-import { ServicesContext } from '../../context/ServicesContext';
-
+import { useContext } from "react";
+import { ServicesContext } from "../../context/ServicesContext";
 
 function ArticulosFaltantes() {
   const { count, setCount } = useContext(ServicesContext);
+
+  const setCountFor = (id, newCount) => {
+    setCounts((prev) => ({ ...prev, [id]: newCount }));
+  };
   const [articulos, setArticulos] = useState([]);
   const [articulosSeleccionados, setArticulosSeleccionados] = useState([]);
   console.log("Estos son los articulos seleccionados:", articulosSeleccionados);
@@ -86,15 +89,15 @@ function ArticulosFaltantes() {
       name: "Cantidad",
       cell: (row) => <Counter />,
     },
-        {
+    {
       name: "Precio Unitario",
-     
+
       selector: (row) => row.precio,
       sortable: true,
     },
     {
       name: "PrecioTotal",
-   selector: (row) => row.precio * count,
+      selector: (row) => row.precio * count,
       sortable: true,
     },
     {
@@ -119,7 +122,7 @@ function ArticulosFaltantes() {
   ];
 
   return (
-    <div className="card shadow-sm mt-1">
+    <div className="card shadow-sm mt-1 col-md-10 mx-auto p-3 mt-5">
       <h4 className="mb-2 d-flex justify-content-center">Lista de Servicios</h4>
       <Select
         className="bg-white"

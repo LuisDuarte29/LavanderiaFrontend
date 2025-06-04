@@ -1,0 +1,7 @@
+body {
+  background: linear-gradient(
+    180deg,
+    #71bbc5b0 0%,    /* blanco arriba */
+    #f0f6f8 100%   /* azul muy suave abajo */
+  );
+}

@@ -138,7 +138,7 @@ const ListadoPedidos = ({ isAuthenticated }) => {
   };
 
   return (
-    <div className="card shadow-sm p-2 mt-3">
+    <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
       <h2 className="mb-4">Lista de Pedidos</h2>
       <DataTable
         columns={columnas}

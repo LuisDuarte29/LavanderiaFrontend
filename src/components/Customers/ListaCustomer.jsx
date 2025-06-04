@@ -5,7 +5,7 @@ import {
   useNavigate,
   NavLink,
 } from "react-router-dom";
-import {useListaCustomerGet} from "../../Hooks/useListaCustomerGet";
+import { useListaCustomerGet } from "../../Hooks/useListaCustomerGet";
 
 // 1. Crear el tema personalizado FUERA del componente
 createTheme("custom", {
@@ -34,36 +34,34 @@ createTheme("custom", {
   },
 });
 
-
-const Lista = ({isAuthenticated}) => {
-
+const Lista = ({ isAuthenticated }) => {
   // Aquí se obtiene el estado de autenticación desde el componente padre
-  // y se pasa como prop al hook useListaCustomerGet para que me devuelva los datos de la api y reutilizar el 
+  // y se pasa como prop al hook useListaCustomerGet para que me devuelva los datos de la api y reutilizar el
   // componente en otros lugares si es necesario.
-    const {data,err,loading} = useListaCustomerGet(isAuthenticated); // Obtener los datos de la API
+  const { data, err, loading } = useListaCustomerGet(isAuthenticated); // Obtener los datos de la API
 
-    if (!isAuthenticated){
-      return (
-        <div className="alert alert-danger" role="alert">
-          No tienes permiso para ver esta página. Por favor, inicia sesión.
-        </div>
-      );
-    }
-    if (loading) {
-      return (
-        <div className="alert alert-info" role="alert">
-          Cargando datos...
-        </div>
-      );
-    }
-    if (err!=null) {
-      return (
-        <div className="alert alert-danger" role="alert">
-          Ha ocurrido un error al cargar los datos: {err.message}
-        </div>
-      );
-    }
-    console.log("Este es el data de la lista: " + data);
+  if (!isAuthenticated) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        No tienes permiso para ver esta página. Por favor, inicia sesión.
+      </div>
+    );
+  }
+  if (loading) {
+    return (
+      <div className="alert alert-info" role="alert">
+        Cargando datos...
+      </div>
+    );
+  }
+  if (err != null) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        Ha ocurrido un error al cargar los datos: {err.message}
+      </div>
+    );
+  }
+  console.log("Este es el data de la lista: " + data);
   const columnas = [
     {
       name: "ID",
@@ -108,7 +106,7 @@ const Lista = ({isAuthenticated}) => {
   };
 
   return (
-    <div className="card shadow-sm p-2 mt-3">
+    <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
       <h2 className="mb-4">Lista de Clientes</h2>
       <DataTable
         columns={columnas}

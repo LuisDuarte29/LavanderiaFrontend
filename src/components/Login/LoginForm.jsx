@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -6,6 +6,11 @@ const LoginForm = ({ onLogin }) => {
   const [Usuario, setUsername] = useState("");
   const [PasswordString, setPassword] = useState("");
 
+  const usuarioRef = useRef(null);
+  useEffect(() => {
+    //Current apunta al elemento actual del ref
+    usuarioRef.current.focus();
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -49,6 +54,7 @@ const LoginForm = ({ onLogin }) => {
                 Usuario:
               </label>
               <input
+                ref={usuarioRef}
                 type="text"
                 id="Usuario"
                 className="form-control"

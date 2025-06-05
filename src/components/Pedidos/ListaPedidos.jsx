@@ -62,6 +62,8 @@ const ListadoPedidos = ({ isAuthenticated }) => {
 
   useEffect(() => {
     const ListaPedidos = async () => {
+      const abort = new AbortController();
+      const signal = abort.signal;
       try {
         const tokenRecibido = localStorage.getItem("token");
 
@@ -88,6 +90,10 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     if (isAuthenticated) {
       ListaPedidos();
     }
+    return () => {
+      // Limpiar el efecto para evitar fugas de memoria
+      abort.abort();
+    };
   }, [isAuthenticated]);
 
   const columnas = [

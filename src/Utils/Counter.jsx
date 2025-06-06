@@ -1,9 +1,10 @@
 import React from "react";
-import { useState } from "react";
 import { useContext } from "react";
 import { ServicesContext } from "../context/ServicesContext";
+
 export function Counter({ id }) {
   const { counts, setCountFor } = useContext(ServicesContext);
+  // Si no existe counts[id], asumimos 1 como inicial
   const count = counts[id] || 1;
 
   return (

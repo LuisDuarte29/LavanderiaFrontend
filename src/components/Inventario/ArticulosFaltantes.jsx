@@ -1,22 +1,19 @@
-import { set } from "date-fns";
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import Select from "react-select";
 import { Counter } from "../../Utils/Counter";
-import { useContext } from "react";
 import { ServicesContext } from "../../context/ServicesContext";
 
 function ArticulosFaltantes() {
-  const { count, setCount } = useContext(ServicesContext);
+  // ———✱ Extraemos del contexto exactamente lo que definimos en ServicesContext:
+  const { counts } = useContext(ServicesContext);
 
-  const setCountFor = (id, newCount) => {
-    setCounts((prev) => ({ ...prev, [id]: newCount }));
-  };
   const [articulos, setArticulos] = useState([]);
   const [articulosSeleccionados, setArticulosSeleccionados] = useState([]);
   console.log("Estos son los articulos seleccionados:", articulosSeleccionados);
+
   const FECH_API_ARTICULOS = "https://localhost:7184/api/Service/Articulos";
+
   useEffect(() => {
     const tokenRecibido = localStorage.getItem("token");
     const fetchArticulos = async () => {
@@ -74,6 +71,7 @@ function ArticulosFaltantes() {
       secondary: "#2ecc71",
     },
   });
+
   const columns = [
     {
       name: "IdArticulo",
@@ -87,17 +85,21 @@ function ArticulosFaltantes() {
     },
     {
       name: "Cantidad",
-      cell: (row) => <Counter />,
+      // ———✱ Le pasamos id para que Counter lo use:
+      cell: (row) => <Counter id={row.value} />,
     },
     {
       name: "Precio Unitario",
-
       selector: (row) => row.precio,
       sortable: true,
     },
     {
       name: "PrecioTotal",
-      selector: (row) => row.precio * count,
+      // ———✱ Para cada fila, sacamos de counts la cantidad específica:
+      selector: (row) => {
+        const cantidad = counts[row.value] || 1;
+        return row.precio * cantidad;
+      },
       sortable: true,
     },
     {
@@ -124,6 +126,7 @@ function ArticulosFaltantes() {
   return (
     <div className="card shadow-sm mt-1 col-md-10 mx-auto p-3 mt-5">
       <h4 className="mb-2 d-flex justify-content-center">Lista de Servicios</h4>
+
       <Select
         className="bg-white"
         options={articulos}
@@ -137,13 +140,13 @@ function ArticulosFaltantes() {
           control: (base) => ({
             ...base,
             border: "2px solid #4a90e2",
-            backgroundColor: "#fff", // fondo del control
+            backgroundColor: "#fff",
           }),
           menu: (base) => ({
             ...base,
-            backgroundColor: "#fff", // fondo del menú
-            opacity: 1, // asegura que no sea transparente
-            zIndex: 100, // por si se oculta detrás de otros elementos
+            backgroundColor: "#fff",
+            opacity: 1,
+            zIndex: 100,
           }),
           option: (base, state) => ({
             ...base,

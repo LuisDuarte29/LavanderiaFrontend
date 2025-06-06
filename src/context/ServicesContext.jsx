@@ -1,12 +1,11 @@
-import React from "react";
-
-import { createContext, useState, useEffect, useMemo } from "react";
+import React, { createContext, useState, useEffect, useMemo } from "react";
 
 export const ServicesContext = createContext();
 
 export function ServicesProvider({ children }) {
   const [precio, setPrecio] = useState(0);
-  const [count, setCount] = useState(1);
+  const [counts, setCounts] = useState({}); // Ahora es un objeto vacío
+
   const [formData, setFormData] = useState({
     AppointmentDate: new Date(),
     Comments: "",
@@ -22,12 +21,21 @@ export function ServicesProvider({ children }) {
     Address: "",
   });
 
+  // Calcula el precio total a partir de formData.Services
   const totalPrecio = useMemo(() => {
     return formData.Services.reduce(
-      (acc, item) => acc + parseInt(item.priceItem),
+      (acc, item) => acc + parseInt(item.priceItem, 10),
       0
     );
   }, [formData.Services]);
+
+  // Función para actualizar la cantidad de un artículo específico
+  const setCountFor = (id, newCount) => {
+    setCounts((prev) => ({
+      ...prev,
+      [id]: newCount,
+    }));
+  };
 
   useEffect(() => {
     setPrecio(totalPrecio);
@@ -42,8 +50,8 @@ export function ServicesProvider({ children }) {
         setPrecio,
         formDataCustomer,
         setFormDataCustomer,
-        count,
-        setCount,
+        counts,
+        setCountFor,
       }}
     >
       {children}

@@ -14,6 +14,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Drawer from "@mui/material/Drawer";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import ColorModeIconDropdown from "../../Utils/ColorModelconDropdown";
+import { useContext } from "react";
+import { ServicesContext } from "../../context/ServicesContext";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -34,7 +36,9 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 export default function Navbar({ setautenticated }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+const {show, setShow} = useContext(ServicesContext);
 
+const handleShow = () => setShow(true);
   const handleLogout = () => {
     localStorage.removeItem("token");
     setautenticated(false);
@@ -116,6 +120,14 @@ export default function Navbar({ setautenticated }) {
               >
                 Articulos Faltantes
               </Button>
+    <Button
+      onClick={handleShow}
+      variant="primary"
+      size="sm"
+      className="ms-2"
+    >
+      Cambio de Clave
+    </Button>
             </Box>
           </Box>
 

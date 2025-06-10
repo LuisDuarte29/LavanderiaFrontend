@@ -3,6 +3,8 @@ import DataTable, { createTheme } from "react-data-table-component";
 import Select from "react-select";
 import { Counter } from "../../Utils/Counter";
 import { ServicesContext } from "../../context/ServicesContext";
+import { set } from "date-fns";
+import { use } from "react";
 
 function ArticulosFaltantes() {
   // ———✱ Extraemos del contexto exactamente lo que definimos en ServicesContext:
@@ -10,6 +12,8 @@ function ArticulosFaltantes() {
 
   const [articulos, setArticulos] = useState([]);
   const [articulosSeleccionados, setArticulosSeleccionados] = useState([]);
+  const [PrecioJusto,setPrecioJusto] = useState([]);
+ const [PrecioTotalCantidad,setPrecioTotalCantidad] = useState(0);
   console.log("Estos son los articulos seleccionados:", articulosSeleccionados);
 
   const FECH_API_ARTICULOS = "https://localhost:7184/api/Service/Articulos";
@@ -98,10 +102,12 @@ function ArticulosFaltantes() {
       // ———✱ Para cada fila, sacamos de counts la cantidad específica:
       selector: (row) => {
         const cantidad = counts[row.value] || 1;
+        
         return row.precio * cantidad;
       },
       sortable: true,
     },
+      
     {
       name: "Acciones",
       cell: (row) => (
@@ -122,6 +128,20 @@ function ArticulosFaltantes() {
       ),
     },
   ];
+useEffect(() => {
+  const precioTotal=articulosSeleccionados.map((row)=> {
+    const cantidad =counts[row.value] || 1;
+    return row.precio * cantidad;
+  });
+  setPrecioJusto(precioTotal);
+}, [articulosSeleccionados, counts]);
+useEffect(() => {
+ setPrecioTotalCantidad(PrecioJusto.reduce((acc,item)=>acc+item,0));
+    console.log("Estos son los precios total CANTIDAD:", PrecioTotalCantidad);
+}, [PrecioJusto]);
+
+
+
 
   return (
     <div className="card shadow-sm mt-1 col-md-10 mx-auto p-3 mt-5">
@@ -169,7 +189,12 @@ function ArticulosFaltantes() {
           </div>
         }
       />
+          <div className="d-flex justify-content-end">
+        <h5 className="text-end me-3"> Precio Total: {PrecioTotalCantidad} GS.</h5>
     </div>
+      
+    </div>
+
   );
 }
 

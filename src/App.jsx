@@ -18,6 +18,7 @@ import { lazy, Suspense } from "react";
 import { Lazy } from "./LazyCarga/Lazy"; // Componente Lazy para carga diferida
 import { delayImport } from "./LazyCarga/DelayImport"; // Función para retrasar la importación de componentes
 import ArticulosFaltantes from "./components/Inventario/ArticulosFaltantes";
+import  CambioClave  from "./components/Login/CambioClave"; // Componente CambioClave
 import "./../src/App.css";
 
 const App = () => {
@@ -31,6 +32,9 @@ const App = () => {
   const ListaPedidosForm = lazy(() =>
     import("./components/Pedidos/ListaPedidos")
   ); // Carga diferida del componente ListaPedidos
+  const CambioClaveForm=lazy(() =>
+    import("./components/Login/CambioClave")  
+  ); // Carga diferida del componente CambioClave
   const CreatePedidosForm = lazy(() =>
     import("./components/Pedidos/CreatePedidos")
   ); // Carga diferida del componente CreatePedidos
@@ -47,7 +51,9 @@ const App = () => {
   return (
     <Router>
       <div className="container-fluid min-vh-100 min-vw-100 d-flex flex-column">
+              <CambioClave/>
         <Routes>
+    
           <Route
             path="/"
             element={
@@ -203,6 +209,7 @@ const App = () => {
               )
             }
           />
+         
         </Routes>
         <ToastContainer
           position="top-right"

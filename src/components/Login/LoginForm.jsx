@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-
+import { ServicesContext } from "../../context/ServicesContext";
+import { useContext } from "react";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 const LoginForm = ({ onLogin }) => {
-  const [Usuario, setUsername] = useState("");
+  const { Usuario, setUsername } = useContext(ServicesContext);
   const [PasswordString, setPassword] = useState("");
 
   const usuarioRef = useRef(null);
@@ -11,6 +14,8 @@ const LoginForm = ({ onLogin }) => {
     //Current apunta al elemento actual del ref
     usuarioRef.current.focus();
   }, []);
+
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -23,16 +28,19 @@ const LoginForm = ({ onLogin }) => {
         body: JSON.stringify({ correo: Usuario, clave: PasswordString }),
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new error("Credenciales incorrectas");
-          }
           return response.json();
         })
         .then((data) => {
           const token = data.token;
+          console.log("Token recibido:", token);
+          if (!token) {
+            toast.error(
+              "Credenciales incorrectas. Por favor, inténtalo de nuevo."
+            );
+            return;
+          }
           localStorage.setItem("token", token);
           onLogin(true);
-          console.log(token);
         });
     } catch (error) {
       console.error("Error al comunicarse con la API:", error);

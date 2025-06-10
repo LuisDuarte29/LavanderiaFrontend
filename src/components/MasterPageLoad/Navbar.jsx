@@ -36,9 +36,9 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 export default function Navbar({ setautenticated }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-const {show, setShow} = useContext(ServicesContext);
+  const { show, setShow } = useContext(ServicesContext);
 
-const handleShow = () => setShow(true);
+  const handleShow = () => setShow(true);
   const handleLogout = () => {
     localStorage.removeItem("token");
     setautenticated(false);
@@ -120,14 +120,15 @@ const handleShow = () => setShow(true);
               >
                 Articulos Faltantes
               </Button>
-    <Button
-      onClick={handleShow}
-      variant="primary"
-      size="sm"
-      className="ms-2"
-    >
-      Cambio de Clave
-    </Button>
+              <Button
+                onClick={handleShow}
+                variant="text"
+                size="small"
+                color="warning"
+                sx={{ minWidth: 0 }}
+              >
+                Cambio de Clave
+              </Button>
             </Box>
           </Box>
 

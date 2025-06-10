@@ -5,7 +5,8 @@ export const ServicesContext = createContext();
 export function ServicesProvider({ children }) {
   const [precio, setPrecio] = useState(0);
   const [counts, setCounts] = useState({}); // Ahora es un objeto vacío
-    const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false);
+  const [Usuario, setUsername] = useState("");
   const [formData, setFormData] = useState({
     AppointmentDate: new Date(),
     Comments: "",
@@ -20,7 +21,6 @@ export function ServicesProvider({ children }) {
     Phone: "",
     Address: "",
   });
-
 
   // Calcula el precio total a partir de formData.Services
   const totalPrecio = useMemo(() => {
@@ -54,7 +54,9 @@ export function ServicesProvider({ children }) {
         counts,
         setCountFor,
         show,
-        setShow
+        setShow,
+        Usuario,
+        setUsername,
       }}
     >
       {children}

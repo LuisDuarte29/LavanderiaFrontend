@@ -61,9 +61,8 @@ const ListadoPedidos = ({ isAuthenticated }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    const abort = new AbortController();
     const ListaPedidos = async () => {
-      const abort = new AbortController();
-      const signal = abort.signal;
       try {
         const tokenRecibido = localStorage.getItem("token");
 

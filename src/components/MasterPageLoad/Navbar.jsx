@@ -16,6 +16,10 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import ColorModeIconDropdown from "../../Utils/ColorModelconDropdown";
 import { useContext } from "react";
 import { ServicesContext } from "../../context/ServicesContext";
+import ContainerReact from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import NavbarReact from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -129,6 +133,19 @@ export default function Navbar({ setautenticated }) {
               >
                 Cambio de Clave
               </Button>
+              <NavbarReact className="sm g-2">
+                <ContainerReact>
+                  <NavbarReact.Collapse id="basic-navbar-nav">
+                    <Nav className="me-auto">
+                      <NavDropdown title="Usuarios" id="basic-nav-dropdown">
+                        <NavDropdown.Item href="#action/3.1">
+                          Action
+                        </NavDropdown.Item>
+                      </NavDropdown>
+                    </Nav>
+                  </NavbarReact.Collapse>
+                </ContainerReact>
+              </NavbarReact>
             </Box>
           </Box>
 

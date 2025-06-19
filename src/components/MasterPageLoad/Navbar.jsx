@@ -133,13 +133,19 @@ export default function Navbar({ setautenticated }) {
               >
                 Cambio de Clave
               </Button>
-              <NavbarReact className="sm g-2">
+              <NavbarReact bg="light" expand="lg">
                 <ContainerReact>
+                  <NavbarReact.Toggle aria-controls="basic-navbar-nav" />
                   <NavbarReact.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                       <NavDropdown title="Usuarios" id="basic-nav-dropdown">
-                        <NavDropdown.Item href="#action/3.1">
-                          Action
+                        <NavDropdown.Item as={NavLink} to="/ListaUsuarios">
+                          <Box
+                            component="span"
+                            sx={{ fontWeight: "bold", fontSize: "1.25rem" }}
+                          >
+                            Lista de Usuarios
+                          </Box>
                         </NavDropdown.Item>
                       </NavDropdown>
                     </Nav>

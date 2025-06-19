@@ -29,10 +29,16 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
 
   const ListaForm = lazy(() => import("./components/Customers/ListaCustomer")); // Carga diferida del componente Lista
+  const CreateUsuarioForm = lazy(() =>
+    import("./components/Usuarios/CreateUsuarios")
+  );
   const ListaPedidosForm = lazy(() =>
     import("./components/Pedidos/ListaPedidos")
   ); // Carga diferida del componente ListaPedidos
   const CambioClaveForm = lazy(() => import("./components/Login/CambioClave")); // Carga diferida del componente CambioClave
+  const ListaUsuariosForm = lazy(() =>
+    import("./components/Usuarios/ListaUsuarios")
+  );
   const CreatePedidosForm = lazy(() =>
     import("./components/Pedidos/CreatePedidos")
   ); // Carga diferida del componente CreatePedidos
@@ -60,6 +66,7 @@ const App = () => {
               </Suspense>
             }
           />
+
           <Route
             path="/login"
             element={
@@ -81,6 +88,23 @@ const App = () => {
                     <LazyNavbar setautenticated={setIsAuthenticated} />
                     {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
                     <Dashboard isAuthenticated={isAuthenticated} />
+                  </>
+                </Suspense>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          <Route
+            path="/ListaUsuarios"
+            element={
+              isAuthenticated ? (
+                <Suspense fallback={<Lazy />}>
+                  <>
+                    <LazyNavbar setautenticated={setIsAuthenticated} />
+                    {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+                    <ListaUsuariosForm isAuthenticated={isAuthenticated} />
                   </>
                 </Suspense>
               ) : (
@@ -190,17 +214,18 @@ const App = () => {
               )
             }
           />
-
           <Route
-            path="/ArticulosFaltantes"
+            path="/CreateUsuarios"
             element={
               isAuthenticated ? (
-                <>
-                  <Navbar setautenticated={setIsAuthenticated} />{" "}
-                  {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-                  <ArticulosFaltantes />{" "}
-                  {/* Asegúrate de importar este componente */}
-                </>
+                <Suspense fallback={<Lazy />}>
+                  <>
+                    <LazyNavbar setautenticated={setIsAuthenticated} />{" "}
+                    {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+                    <CreateUsuarioForm setautenticated={setIsAuthenticated} />{" "}
+                    {/* Asegúrate de importar este componente */}
+                  </>
+                </Suspense>
               ) : (
                 <Navigate to="/login" replace />
               )

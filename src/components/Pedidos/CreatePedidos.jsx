@@ -8,9 +8,9 @@ import { CreatePedidosDetails } from "./PedidosDetails/CreatePedidosDetails";
 import { useNavigate, useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ServicesContext } from "../../context/ServicesContext";
-import { toast } from "react-toastify"; 
-import {useListaVehicle} from "../../Hooks/useListaVehicle";  
-import {useCustomerGet} from "../../Hooks/useCustomerGet";   
+import { toast } from "react-toastify";
+import { useListaVehicle } from "../../Hooks/useListaVehicle";
+import { useCustomerGet } from "../../Hooks/useCustomerGet";
 import { useServiciosGet } from "../../Hooks/useServiciosGet";
 
 const CreatePedidos = ({ isAuthenticated }) => {
@@ -21,10 +21,9 @@ const CreatePedidos = ({ isAuthenticated }) => {
   registerLocale("es", es); // Registra el locale español
   setDefaultLocale("es"); // Establece el locale por defecto a español
 
-  const { dataCustomer } = useCustomerGet(isAuthenticated) 
-  const {dataVehicle1} = useListaVehicle(isAuthenticated);
-const { dataServicio } = useServiciosGet(isAuthenticated);
-
+  const { dataCustomer } = useCustomerGet(isAuthenticated);
+  const { dataVehicle1 } = useListaVehicle(isAuthenticated);
+  const { dataServicio } = useServiciosGet(isAuthenticated);
 
   useEffect(() => {
     const tokenRecibido = localStorage.getItem("token");
@@ -122,13 +121,12 @@ const { dataServicio } = useServiciosGet(isAuthenticated);
       if (!response.ok) {
         throw new Error("Ha ocurrido un error");
       }
-    
-      toast.success("El elemento pedidos se ha creado con exito")
 
+      toast.success("El elemento pedidos se ha creado con exito");
 
       navigate("/ListaPedidos");
     } catch (error) {
-     toast.error("Ocurrio un error al crear el pedido")
+      toast.error("Ocurrio un error al crear el pedido");
     }
   };
 

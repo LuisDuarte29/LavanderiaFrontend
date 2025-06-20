@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import Select from "react-select"; // <— aquí
 import { useCustomerGet } from "../../Hooks/useCustomerGet";
 import { useRolesGet } from "../../Hooks/useRolesGet";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateUsuarios({ isAuthenticated }) {
   const [formDataUsuario, setFormDataUsuario] = useState({
@@ -13,6 +15,44 @@ export default function CreateUsuarios({ isAuthenticated }) {
 
   const { dataCustomer } = useCustomerGet(isAuthenticated);
   const { dataRoles } = useRolesGet(isAuthenticated);
+  const navigate = useNavigate();
+  const CreateUsuario = async () => {
+    const tokenRecibido = localStorage.getItem("token");
+    const url = "https://localhost:7184/api/Usuarios/CreateUsuario";
+    try {
+      const createUsuario = {
+        CustomerID: formDataUsuario.Customer?.value, // Asegúrate de enviar el ID
+        RoleId: formDataUsuario.Rol?.value, // Asegúrate de enviar el ID del rol
+        correo: formDataUsuario.Correo,
+      };
+
+      console.log("bodyUsuario →", createUsuario);
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${tokenRecibido}`,
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(createUsuario),
+      });
+      if (!response.ok) {
+        throw new Error("Error al crear el usuario");
+      }
+      toast.success("Usuario creado exitosamente");
+      setFormDataUsuario({
+        Correo: "",
+        Rol: null,
+        Customer: null,
+      });
+      setTimeout(() => {
+        navigate("/ListaUsuarios"); // Asegúrate de importar useNavigate desde react-router-dom
+      }, 500);
+    } catch (error) {
+      console.error("Error al crear el usuario:", error);
+      alert("Error al crear el usuario: " + error.message);
+    }
+  };
 
   console.log("dataRoles →", dataRoles, Array.isArray(dataRoles));
   console.log("dataCust →", dataCustomer, Array.isArray(dataCustomer));
@@ -75,7 +115,15 @@ export default function CreateUsuarios({ isAuthenticated }) {
           />
         </div>
       </div>
-      {/* …otros campos… */}
+      <div className="text-end">
+        <button
+          type="button"
+          onClick={CreateUsuario}
+          className="btn btn-primary"
+        >
+          Crear Cliente
+        </button>
+      </div>
     </div>
   );
 }

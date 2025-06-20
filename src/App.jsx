@@ -45,6 +45,11 @@ const App = () => {
   const CreateCustomerForm = lazy(() =>
     import("./components/Customers/CreateCustomer")
   ); // Carga diferida del componente CreateCustomer
+
+  const AsignarPermisosRolesForm = lazy(() =>
+    import("./components/Roles/AsignarPermisosRoles")
+  ); // Carga diferida del componente AsignarPermisosRoles
+  const ListaRolesForm = lazy(() => import("./components/Roles/ListaRoles")); // Carga diferida del componente ListaRoles
   const LazyNavbar = lazy(() => import("./components/MasterPageLoad/Navbar")); // Carga diferida del componente Navbar
   const LazyLoginForm = lazy(() => import("./components/Login/LoginForm")); // Carga diferida del componente LoginForm
   // Maneja la autenticación
@@ -105,6 +110,23 @@ const App = () => {
                     <LazyNavbar setautenticated={setIsAuthenticated} />
                     {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
                     <ListaUsuariosForm isAuthenticated={isAuthenticated} />
+                  </>
+                </Suspense>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          <Route
+            path="/ListaRoles"
+            element={
+              isAuthenticated ? (
+                <Suspense fallback={<Lazy />}>
+                  <>
+                    <LazyNavbar setautenticated={setIsAuthenticated} />
+                    {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+                    <ListaRolesForm isAuthenticated={isAuthenticated} />
                   </>
                 </Suspense>
               ) : (
@@ -206,6 +228,25 @@ const App = () => {
                     <LazyNavbar setautenticated={setIsAuthenticated} />{" "}
                     {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
                     <ArticulosFaltantes />{" "}
+                    {/* Asegúrate de importar este componente */}
+                  </>
+                </Suspense>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/AsignarPermisosRoles/:rolId"
+            element={
+              isAuthenticated ? (
+                <Suspense fallback={<Lazy />}>
+                  <>
+                    <LazyNavbar setautenticated={setIsAuthenticated} />{" "}
+                    {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+                    <AsignarPermisosRolesForm
+                      setIsAuthenticated={setIsAuthenticated}
+                    />
                     {/* Asegúrate de importar este componente */}
                   </>
                 </Suspense>

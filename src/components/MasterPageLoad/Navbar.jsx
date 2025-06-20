@@ -147,6 +147,14 @@ export default function Navbar({ setautenticated }) {
                             Lista de Usuarios
                           </Box>
                         </NavDropdown.Item>
+                        <NavDropdown.Item as={NavLink} to="/ListaRoles">
+                          <Box
+                            component="span"
+                            sx={{ fontWeight: "bold", fontSize: "1.25rem" }}
+                          >
+                            Lista de Roles
+                          </Box>
+                        </NavDropdown.Item>
                       </NavDropdown>
                     </Nav>
                   </NavbarReact.Collapse>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import { NavLink } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import { Navigate,useNavigate } from "react-router-dom";
 
 function ListaRoles({ isAutenticated }) {
   const [dataRoles, setDataRoles] = useState([]);

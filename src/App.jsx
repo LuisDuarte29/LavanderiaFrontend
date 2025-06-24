@@ -237,7 +237,7 @@ const App = () => {
             }
           />
           <Route
-            path="/AsignarPermisosRoles/:rolId"
+            path="/AsignarPermisosRoles/:rolId/:rolName"
             element={
               isAuthenticated ? (
                 <Suspense fallback={<Lazy />}>

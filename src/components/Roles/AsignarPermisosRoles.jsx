@@ -1,4 +1,4 @@
-import  { useEffect } from "react";
+import { useEffect } from "react";
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
@@ -8,9 +8,10 @@ import { DatatableRolePermiso } from "./DatatableRolePermiso";
 import { toast } from "react-toastify";
 
 function AsignarPermisosRoles({ isAuthenticated }) {
-  const { rolId } = useParams();
+  const { rolId, rolName } = useParams();
   const { dataPermisos } = usePermisosGet(isAuthenticated);
   const { rolesSelect, setRolesSelect } = useContext(ServicesContext);
+
   useEffect(() => {
     console.log("Este es el rolId:", rolId);
 
@@ -19,9 +20,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
       setRolesSelect([]);
       return;
     }
-
     const tokenRecibido = localStorage.getItem("token");
-
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -58,7 +57,6 @@ function AsignarPermisosRoles({ isAuthenticated }) {
           // Guarda un array plano con el objeto encontrado
           setRolesSelect(roleOption);
         } else {
-      
           setRolesSelect([]);
         }
       } catch (error) {
@@ -69,14 +67,46 @@ function AsignarPermisosRoles({ isAuthenticated }) {
     fetchData();
   }, [rolId, dataPermisos]);
 
+  const GuardarDatosPermisos = async () => {
+    console.log("funciona el boton GuardarDatosPermisos");
+    const tokenRecibido = localStorage.getItem("token");
+    const url = `https://localhost:7184/api/Usuarios/CreatePermisosRole`;
+    try {
+      const bodyPermisos = {
+        RoleId: parseInt(rolId),
+        PermisosId: rolesSelect.map((permiso) => permiso.value), // Asegúrate de enviar un array de IDs
+      };
+      console.log("bodyPermisos →", bodyPermisos);
+      const response = await fetch(url, {
+        headers: {
+          authorization: `Bearer ${tokenRecibido}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyPermisos),
+        method: "PUT",
+      });
+      if (!response.ok) {
+        throw new Error("Error al asignar los permisos al rol");
+      }
+      toast.success("✅ Permisos asignados con éxito!");
+    } catch (error) {
+      toast.error("Error al asignar los permisos:", error);
+    }
+  };
+
   return (
-    <div className="mt-5 mb-3">
-      <div className="mt-5 me-2 col-md-4">
-        <div className="mt-5 mb-3">
+    <div className="mt-5 mb-3 d-flex justify-content-center flex-column align-items-center">
+      <div className="mt-5 me-2 col-md-4 ">
+        <div className="mb-3">
+          <label className="form-label fs-4 text-center">
+            Asignar permisos al rol: <strong>{rolName}</strong>
+          </label>
+        </div>
+        <div>
           <Select
             className="bg-white"
             options={dataPermisos}
-            value={rolesSelect.selectedOption}
+            value={rolesSelect}
             onChange={(selectedOption) => setRolesSelect(selectedOption)}
             placeholder="Elige..."
             isSearchable
@@ -103,7 +133,19 @@ function AsignarPermisosRoles({ isAuthenticated }) {
           />
         </div>
       </div>
-      <DatatableRolePermiso />
+
+      <div className="">
+        <DatatableRolePermiso />
+      </div>
+      <div>
+        <button
+          className="btn btn-primary mt-3 mb-3"
+          onClick={GuardarDatosPermisos}
+          type="button"
+        >
+          Guardar los permisos
+        </button>
+      </div>
     </div>
   );
 }

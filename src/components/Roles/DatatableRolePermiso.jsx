@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import DataTable, { createTheme } from "react-data-table-component";
 import { useContext } from "react";
 import { ServicesContext } from "../../context/ServicesContext";
@@ -30,7 +30,7 @@ createTheme("custom", {
 });
 
 export function DatatableRolePermiso() {
-  const { rolesSelect, setRolesSelect } = useContext(ServicesContext);
+  const { rolesSelect } = useContext(ServicesContext);
 
   const column = [
     {

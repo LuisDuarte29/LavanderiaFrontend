@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
@@ -38,6 +38,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
         if (!response.ok) {
           // Si el servidor responde con un estado de error
           const errorText = await response.text();
+          toast.error(errorText);
           toast.error("Error al obtener los permisos del rol");
           setRolesSelect([]);
           return;
@@ -51,12 +52,13 @@ function AsignarPermisosRoles({ isAuthenticated }) {
         const roleOption = dataPermisos.filter((item) =>
           ApiPermiso.includes(item.value)
         );
+        console.log("Permisos del rol:", roleOption);
 
         if (roleOption) {
           // Guarda un array plano con el objeto encontrado
           setRolesSelect(roleOption);
         } else {
-          // Si no encuentra coincidencia, vacía
+      
           setRolesSelect([]);
         }
       } catch (error) {
@@ -65,7 +67,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
     };
 
     fetchData();
-  }, [rolId]);
+  }, [rolId, dataPermisos]);
 
   return (
     <div className="mt-5 mb-3">

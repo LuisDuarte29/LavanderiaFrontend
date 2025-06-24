@@ -24,7 +24,7 @@ export function usePermisosGet(isAuthenticated) {
           label: i.permisoName,
         }));
         setDataPermisos(permisos);
-        console.log("estos serian los Permisos: " + json);
+        console.log("estos serian los Permisos: " + permisos);
       } catch (e) {
         toast.error(e.message);
       }

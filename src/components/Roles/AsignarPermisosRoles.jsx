@@ -6,12 +6,15 @@ import { ServicesContext } from "../../context/ServicesContext";
 import { usePermisosGet } from "../../Hooks/usePermisosGet";
 import { DatatableRolePermiso } from "./DatatableRolePermiso";
 import { toast } from "react-toastify";
+import { useComponentsFormGet } from "../../Hooks/useComponentsForm";
 
 function AsignarPermisosRoles({ isAuthenticated }) {
   const { rolId, rolName } = useParams();
   const { dataPermisos } = usePermisosGet(isAuthenticated);
+  const { dataComponents } = useComponentsFormGet(isAuthenticated);
   const { rolesSelect, setRolesSelect } = useContext(ServicesContext);
-
+  const { componentsFormSelect, setcomponentsFormSelect } =
+    useContext(ServicesContext);
   useEffect(() => {
     console.log("Este es el rolId:", rolId);
 
@@ -67,6 +70,9 @@ function AsignarPermisosRoles({ isAuthenticated }) {
     fetchData();
   }, [rolId, dataPermisos]);
 
+  const selectedComponentOption =
+    dataComponents.find((opt) => opt.value === componentsFormSelect) || null;
+
   const GuardarDatosPermisos = async () => {
     console.log("funciona el boton GuardarDatosPermisos");
     const tokenRecibido = localStorage.getItem("token");
@@ -95,56 +101,71 @@ function AsignarPermisosRoles({ isAuthenticated }) {
   };
 
   return (
-    <div className="mt-5 mb-3 d-flex justify-content-center flex-column align-items-center">
-      <div className="mt-5 me-2 col-md-4 ">
+    <div className="mt-5 mb-3 d-flex justify-content-center align-items-center">
+      {/* Le damos un ancho razonable al form */}
+      <div className="w-75 mt-4">
         <div className="mb-3">
-          <label className="form-label fs-4 text-center">
+          <label className="form-label fs-4 text-center d-block">
             Asignar permisos al rol: <strong>{rolName}</strong>
           </label>
         </div>
-        <div>
-          <Select
-            className="bg-white"
-            options={dataPermisos}
-            value={rolesSelect}
-            onChange={(selectedOption) => setRolesSelect(selectedOption)}
-            placeholder="Elige..."
-            isSearchable
-            isMulti
-            noOptionsMessage={() => "No hay opciones"}
-            styles={{
-              control: (base) => ({
-                ...base,
-                border: "2px solid #4a90e2",
-                backgroundColor: "#fff", // fondo del control
-              }),
-              menu: (base) => ({
-                ...base,
-                backgroundColor: "#fff", // fondo del menú
-                opacity: 1, // asegura que no sea transparente
-                zIndex: 100, // por si se oculta detrás de otros elementos
-              }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
-                color: "#000",
-              }),
-            }}
-          />
-        </div>
-      </div>
 
-      <div className="">
+        {/* Aquí el card ocupa todo el ancho (w-100) y dentro usamos row/col */}
+        <div className="card p-3 w-100 mb-4">
+          <div className="row gx-3">
+            <div className="col-md-6">
+              <Select
+                className="bg-white"
+                options={dataPermisos}
+                value={rolesSelect}
+                onChange={(selectOption) => setRolesSelect(selectOption)}
+                placeholder="Elige permisos..."
+                isSearchable
+                isMulti
+                noOptionsMessage={() => "No hay opciones"}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    border: "2px solid #4a90e2",
+                  }),
+                  menu: (base) => ({ ...base, zIndex: 100 }),
+                }}
+              />
+            </div>
+            <div className="col-md-6">
+              <Select
+                className="bg-white"
+                options={dataComponents}
+                value={componentsFormSelect}
+                onChange={(selectOption) =>
+                  setcomponentsFormSelect(selectOption.value)
+                }
+                placeholder="Elige componente..."
+                isSearchable
+                noOptionsMessage={() => "No hay opciones"}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    border: "2px solid #4a90e2",
+                  }),
+                  menu: (base) => ({ ...base, zIndex: 100 }),
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
         <DatatableRolePermiso />
-      </div>
-      <div>
-        <button
-          className="btn btn-primary mt-3 mb-3"
-          onClick={GuardarDatosPermisos}
-          type="button"
-        >
-          Guardar los permisos
-        </button>
+
+        <div className="text-center">
+          <button
+            className="btn btn-primary mt-3 mb-3"
+            onClick={GuardarDatosPermisos}
+            type="button"
+          >
+            Guardar los permisos
+          </button>
+        </div>
       </div>
     </div>
   );

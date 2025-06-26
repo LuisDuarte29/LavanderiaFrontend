@@ -22,7 +22,7 @@ export function ServicesProvider({ children }) {
     Address: "",
   });
   const [rolesSelect, setRolesSelect] = useState([]);
-  const [componentsFormSelect, setComponentsFormSelect] = useState(null);
+  const [componentsFormSelect, setComponentsFormSelect] = useState(1);
 
   // Calcula el precio total a partir de formData.Services
   const totalPrecio = useMemo(() => {

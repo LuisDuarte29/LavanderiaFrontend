@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
+import { data, useParams } from "react-router-dom";
 import Select from "react-select";
 import { ServicesContext } from "../../context/ServicesContext";
 import { usePermisosGet } from "../../Hooks/usePermisosGet";
@@ -13,12 +13,10 @@ function AsignarPermisosRoles({ isAuthenticated }) {
   const { dataPermisos } = usePermisosGet(isAuthenticated);
   const { dataComponents } = useComponentsFormGet(isAuthenticated);
   const { rolesSelect, setRolesSelect } = useContext(ServicesContext);
-  const { componentsFormSelect, setcomponentsFormSelect } =
+  const { componentsFormSelect, setComponentsFormSelect } =
     useContext(ServicesContext);
   useEffect(() => {
     console.log("Este es el rolId:", rolId);
-
-    // Si no hay rol seleccionado, vacía el array y sal del efecto
     if (!rolId) {
       setRolesSelect([]);
       return;
@@ -27,7 +25,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7184/api/Usuarios/GetListPermisos/${rolId}`,
+          `https://localhost:7184/api/Usuarios/GetListPermisos/${rolId}/${componentsFormSelect}`,
           {
             method: "GET",
             headers: {
@@ -68,7 +66,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
     };
 
     fetchData();
-  }, [rolId, dataPermisos]);
+  }, [rolId, dataPermisos, componentsFormSelect]);
 
   const selectedComponentOption =
     dataComponents.find((opt) => opt.value === componentsFormSelect) || null;
@@ -81,6 +79,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
       const bodyPermisos = {
         RoleId: parseInt(rolId),
         PermisosId: rolesSelect.map((permiso) => permiso.value), // Asegúrate de enviar un array de IDs
+        ComponentsFormId: componentsFormSelect, // Asegúrate de enviar el ID del componente
       };
       console.log("bodyPermisos →", bodyPermisos);
       const response = await fetch(url, {
@@ -99,7 +98,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
       toast.error("Error al asignar los permisos:", error);
     }
   };
-
+  console.log("dataComponentes: →", dataComponents);
   return (
     <div className="mt-5 mb-3 d-flex justify-content-center align-items-center">
       {/* Le damos un ancho razonable al form */}
@@ -136,9 +135,11 @@ function AsignarPermisosRoles({ isAuthenticated }) {
               <Select
                 className="bg-white"
                 options={dataComponents}
-                value={componentsFormSelect}
+                value={selectedComponentOption} // Usa la variable que ya calculaste
                 onChange={(selectOption) =>
-                  setcomponentsFormSelect(selectOption.value)
+                  setComponentsFormSelect(
+                    selectOption ? selectOption.value : null
+                  )
                 }
                 placeholder="Elige componente..."
                 isSearchable

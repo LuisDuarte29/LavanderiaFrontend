@@ -31,7 +31,9 @@ const LoginForm = ({ onLogin }) => {
           return response.json();
         })
         .then((data) => {
-          const token = data.token;
+          const token = data.tokenRol.token;
+          const rolId = data.tokenRol.rolId;
+          console.log("La data recibida:", data);
           console.log("Token recibido:", token);
           if (!token) {
             toast.error(
@@ -40,6 +42,7 @@ const LoginForm = ({ onLogin }) => {
             return;
           }
           localStorage.setItem("token", token);
+          localStorage.setItem("rolId", rolId);
           onLogin(true);
         });
     } catch (error) {

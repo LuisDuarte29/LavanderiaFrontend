@@ -6,6 +6,8 @@ import {
   NavLink,
 } from "react-router-dom";
 import { useListaCustomerGet } from "../../Hooks/useListaCustomerGet";
+import { usePermisosHabilitacion } from "../../Hooks/usePermisosHabilitacion";
+import { ServicesContext } from "../../context/ServicesContext";
 
 // 1. Crear el tema personalizado FUERA del componente
 createTheme("custom", {
@@ -38,7 +40,15 @@ const Lista = ({ isAuthenticated }) => {
   // Aquí se obtiene el estado de autenticación desde el componente padre
   // y se pasa como prop al hook useListaCustomerGet para que me devuelva los datos de la api y reutilizar el
   // componente en otros lugares si es necesario.
+
+  const rolId = localStorage.getItem("rolId");
   const { data, err, loading } = useListaCustomerGet(isAuthenticated); // Obtener los datos de la API
+
+  const { habilitacionPermisos } = usePermisosHabilitacion(
+    isAuthenticated,
+    "ListaCustomer",
+    rolId
+  );
 
   if (!isAuthenticated) {
     return (

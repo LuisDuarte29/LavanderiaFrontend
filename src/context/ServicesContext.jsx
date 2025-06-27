@@ -23,6 +23,12 @@ export function ServicesProvider({ children }) {
   });
   const [rolesSelect, setRolesSelect] = useState([]);
   const [componentsFormSelect, setComponentsFormSelect] = useState(1);
+  const [habilitacionPermisos, setHabilitacionPermisos] = useState({
+    Crear: false,
+    Leer: false,
+    Actualizar: false,
+    Eliminar: false,
+  });
 
   // Calcula el precio total a partir de formData.Services
   const totalPrecio = useMemo(() => {
@@ -63,6 +69,8 @@ export function ServicesProvider({ children }) {
         setRolesSelect,
         componentsFormSelect,
         setComponentsFormSelect,
+        habilitacionPermisos,
+        setHabilitacionPermisos,
       }}
     >
       {children}

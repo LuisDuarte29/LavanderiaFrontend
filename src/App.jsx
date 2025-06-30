@@ -22,19 +22,6 @@ import CambioClave from "./components/Login/CambioClave"; // Componente CambioCl
 import "./../src/App.css";
 import { usePermisosHabilitacion } from "../../ReactAmbiental/src/Hooks/usePermisosHabilitacion"; // Hook para permisos
 const App = () => {
-
-  const PermisoRoute= ({ component,children }) => {
-
-    const rolId = localStorage.getItem("rolId"); // Obtiene el rolId del localStorage
-  const { habilitacionPermisos } = usePermisosHabilitacion(isAuthenticated, component, rolId);
-
-  if (habilitacionPermisos.Leer) {
-    return <>{children}</>;
-  }
-  else {
-    return null; // Si no tiene permiso, no renderiza nada
-  }
-  };
   const Dashboard = lazy(() =>
     delayImport(() => import("./components/Customers/ListaCustomer"))
   ); // Carga diferida del componente Lista
@@ -101,16 +88,13 @@ const App = () => {
             path="/Home"
             element={
               isAuthenticated ? (
-                <PermisoRoute component="ListaCustomer">
-                  <Suspense fallback={<Lazy />}>
+                <Suspense fallback={<Lazy />}>
                   <>
                     <LazyNavbar setautenticated={setIsAuthenticated} />
                     {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
                     <Dashboard isAuthenticated={isAuthenticated} />
                   </>
                 </Suspense>
-                </PermisoRoute>
-        
               ) : (
                 <Navigate to="/login" replace />
               )
@@ -154,22 +138,20 @@ const App = () => {
             path="/ListaPedidos"
             element={
               isAuthenticated ? (
-                <PermisoRoute component="ListaPedidos">
-                  <Suspense fallback={<Lazy />}>
-                    <>
-                      <LazyNavbar setautenticated={setIsAuthenticated} />{" "}
-                      {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-                      <ListaPedidosForm isAuthenticated={isAuthenticated} />{" "}
+                <Suspense fallback={<Lazy />}>
+                  <>
+                    <LazyNavbar setautenticated={setIsAuthenticated} />{" "}
+                    {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+                    <ListaPedidosForm isAuthenticated={isAuthenticated} />{" "}
                     {/* Asegúrate de importar este componente */}
                   </>
                 </Suspense>
-              </PermisoRoute>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
             path="/CreatePedidos"
             element={
               isAuthenticated ? (

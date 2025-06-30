@@ -2,7 +2,7 @@ import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ProgressBar } from "../../Utils/ProgressBar";
-
+import { usePermisosHabilitacion } from "../../Hooks/usePermisosHabilitacion";
 // Creamos el tema custom una vez
 createTheme("custom", {
   text: {
@@ -58,8 +58,11 @@ const DetallePedido = ({ data }) => {
 };
 
 const ListadoPedidos = ({ isAuthenticated }) => {
+    const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const rolId = localStorage.getItem("rolId");
 
+  const { habilitacionPermisos } = usePermisosHabilitacion(isAuthenticated, "ListaPedidos", rolId);
   useEffect(() => {
     const abort = new AbortController();
     const ListaPedidos = async () => {
@@ -118,30 +121,41 @@ const ListadoPedidos = ({ isAuthenticated }) => {
       name: "Acciones",
       cell: (row) => (
         <div className="d-flex justify-content-end gap-2">
-          <button
-            className="btn btn-sm btn-primary me-1"
-            onClick={() => handleVer(row)}
-          >
-            Ver
-          </button>
-          <button
-            className="btn btn-sm btn-warning me-1"
-            onClick={() => handleEditar(row)}
-          >
-            Editar
-          </button>
+          {habilitacionPermisos.Eliminar && (
+            <button
+              className="btn btn-sm btn-danger me-1"
+              onClick={() => handleVer(row)}
+            >
+              Ver
+            </button>
+          )}
+
+          {habilitacionPermisos.Actualizar && (
+            <button
+              className="btn btn-sm btn-warning me-1"
+              onClick={() => handleEditar(row)}
+            >
+              Editar
+            </button>
+          )}
         </div>
       ),
     },
   ];
-  const navigate = useNavigate();
+
   const handleEditar = (row) => {
     navigate("/CreatePedidos/" + row.appointmentId);
   };
   const handleVer = () => {
     console.log("este es el boton de ver");
   };
-
+  if (!isAuthenticated || habilitacionPermisos.Leer === false) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        No tienes permiso para ver esta página.
+      </div>
+    );
+  }
   return (
     <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
       <h2 className="mb-4">Lista de Pedidos</h2>
@@ -155,11 +169,14 @@ const ListadoPedidos = ({ isAuthenticated }) => {
         expandableRows
         expandableRowsComponent={DetallePedido}
       />
+      {habilitacionPermisos.Crear ? (
       <button className="col-md-2 btn btn-primary">
         <NavLink className="nav-link" to="/CreatePedidos">
           Crear Pedido
         </NavLink>
       </button>
+      ) : null}
+ 
     </div>
   );
 };

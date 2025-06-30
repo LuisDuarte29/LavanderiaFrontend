@@ -50,10 +50,14 @@ const Lista = ({ isAuthenticated }) => {
     rolId
   );
 
-  if (!isAuthenticated) {
+
+
+        console.log("Permisos habilitados dentro de lista: ", habilitacionPermisos);
+
+  if (!isAuthenticated || !habilitacionPermisos.Leer ) {
     return (
       <div className="alert alert-danger" role="alert">
-        No tienes permiso para ver esta página. Por favor, inicia sesión.
+        No tienes permiso para ver esta página.
       </div>
     );
   }
@@ -91,29 +95,35 @@ const Lista = ({ isAuthenticated }) => {
       name: "Acciones",
       cell: (row) => (
         <div className="d-flex justify-content-end gap-2">
-          <button
+          {habilitacionPermisos.Eliminar ? (
+      <button
             className="btn btn-sm btn-primary me-1"
             onClick={() => handleVer(row)}
           >
             Ver
           </button>
-          <button
-            className="btn btn-sm btn-warning me-1"
-            onClick={() => handleEditar(row)}
-          >
-            Editar
-          </button>
+          ) : null}
+
+          {habilitacionPermisos.Actualizar ? (
+            <button
+              className="btn btn-sm btn-warning me-1"
+              onClick={() => handleEditar(row)}
+            >
+              Editar
+            </button>
+          ) : null}
         </div>
       ),
     },
   ];
-  const navigate = useNavigate();
   const handleEditar = () => {
     console.log("este es el boton de ver");
   };
   const handleVer = () => {
     console.log("este es el boton de ver");
   };
+
+  
 
   return (
     <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
@@ -126,12 +136,14 @@ const Lista = ({ isAuthenticated }) => {
         striped
         theme="custom"
       />
-      <div>
-        <button className="col-md-2 btn btn-primary">
+      <div >
+        {habilitacionPermisos.Crear ? (
+           <button className="col-md-2 btn btn-primary">
           <NavLink className="nav-link" to="/CreateCustomer">
             Crear Cliente
           </NavLink>
         </button>
+        ) : null}
       </div>
     </div>
   );

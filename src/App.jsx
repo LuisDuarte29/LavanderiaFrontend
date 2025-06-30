@@ -1,57 +1,34 @@
-import { useEffect, useState } from "react";
-import Navbar from "./components/MasterPageLoad/Navbar";
+import { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import LoginForm from "./components/Login/LoginForm"; // Componente de Login
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import Lista from "./components/Customers/ListaCustomer";
-import ListaPedidos from "./components/Pedidos/ListaPedidos"; // Componente de ListaPedidos
-import CreatePedidos from "./components/Pedidos/CreatePedidos";
-import CreateCustomer from "./components/Customers/CreateCustomer";
-import { ToastContainer, toast } from "react-toastify";
-import { lazy, Suspense } from "react";
+
+import { ToastContainer } from "react-toastify";
+
 import { Lazy } from "./LazyCarga/Lazy"; // Componente Lazy para carga diferida
-import { delayImport } from "./LazyCarga/DelayImport"; // Función para retrasar la importación de componentes
+import {Suspense } from "react"; // Importa lazy y Suspense de React
 import ArticulosFaltantes from "./components/Inventario/ArticulosFaltantes";
 import CambioClave from "./components/Login/CambioClave"; // Componente CambioClave
-import "./../src/App.css";
-import { usePermisosHabilitacion } from "../../ReactAmbiental/src/Hooks/usePermisosHabilitacion"; // Hook para permisos
+  import "./../src/App.css";
+  import {LazyLoaders}  from "./LazyCarga/LazyLoaders"; // Importa LazyLoaders para carga diferida de componentes
 const App = () => {
-  const Dashboard = lazy(() =>
-    delayImport(() => import("./components/Customers/ListaCustomer"))
-  ); // Carga diferida del componente Lista
-  const [data, setData] = useState([]); // Datos a obtener de la API
+  const Dashboard= LazyLoaders("Customers/ListaCustomer")// Carga diferida del componente Lista
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
-
-  const ListaForm = lazy(() => import("./components/Customers/ListaCustomer")); // Carga diferida del componente Lista
-  const CreateUsuarioForm = lazy(() =>
-    import("./components/Usuarios/CreateUsuarios")
-  );
-  const ListaPedidosForm = lazy(() =>
-    import("./components/Pedidos/ListaPedidos")
-  ); // Carga diferida del componente ListaPedidos
-  const CambioClaveForm = lazy(() => import("./components/Login/CambioClave")); // Carga diferida del componente CambioClave
-  const ListaUsuariosForm = lazy(() =>
-    import("./components/Usuarios/ListaUsuarios")
-  );
-  const CreatePedidosForm = lazy(() =>
-    import("./components/Pedidos/CreatePedidos")
-  ); // Carga diferida del componente CreatePedidos
-  const CreateCustomerForm = lazy(() =>
-    import("./components/Customers/CreateCustomer")
-  ); // Carga diferida del componente CreateCustomer
-
-  const AsignarPermisosRolesForm = lazy(() =>
-    import("./components/Roles/AsignarPermisosRoles")
-  ); // Carga diferida del componente AsignarPermisosRoles
-  const ListaRolesForm = lazy(() => import("./components/Roles/ListaRoles")); // Carga diferida del componente ListaRoles
-  const LazyNavbar = lazy(() => import("./components/MasterPageLoad/Navbar")); // Carga diferida del componente Navbar
-  const LazyLoginForm = lazy(() => import("./components/Login/LoginForm")); // Carga diferida del componente LoginForm
+ const ListaForm              = LazyLoaders("Customers/ListaCustomer");
+const CreateUsuarioForm      = LazyLoaders("Usuarios/CreateUsuarios");
+const ListaPedidosForm       = LazyLoaders("Pedidos/ListaPedidos");
+const ListaUsuariosForm      = LazyLoaders("Usuarios/ListaUsuarios");
+const CreatePedidosForm      = LazyLoaders("Pedidos/CreatePedidos");
+const CreateCustomerForm     = LazyLoaders("Customers/CreateCustomer");
+const AsignarPermisosRolesForm = LazyLoaders("Roles/AsignarPermisosRoles");
+const ListaRolesForm         = LazyLoaders("Roles/ListaRoles");
+const LazyNavbar             = LazyLoaders("MasterPageLoad/Navbar");
+const LazyLoginForm          = LazyLoaders("Login/LoginForm");
   // Maneja la autenticación
   const handleLogin = (isLoggedIn) => {
     setIsAuthenticated(isLoggedIn); // Actualiza el estado de autenticación

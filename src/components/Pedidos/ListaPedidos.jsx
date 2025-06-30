@@ -1,5 +1,5 @@
 import DataTable, { createTheme } from "react-data-table-component";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ProgressBar } from "../../Utils/ProgressBar";
 import { usePermisosHabilitacion } from "../../Hooks/usePermisosHabilitacion";
@@ -98,7 +98,8 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     };
   }, [isAuthenticated]);
 
-  const columnas = [
+  const columnas = useMemo(()=>
+  [
     {
       name: "ID",
       selector: (row) => row.appointmentId,
@@ -141,7 +142,8 @@ const ListadoPedidos = ({ isAuthenticated }) => {
         </div>
       ),
     },
-  ];
+  ], [data, habilitacionPermisos.Actualizar, habilitacionPermisos.Eliminar]
+  ) 
 
   const handleEditar = (row) => {
     navigate("/CreatePedidos/" + row.appointmentId);

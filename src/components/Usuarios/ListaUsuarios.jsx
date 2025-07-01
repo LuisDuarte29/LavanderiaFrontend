@@ -65,7 +65,7 @@ function ListaUsuarios({ isAutenticated }) {
     },
     {
       name: "Rol",
-      selector: (row) => row.role,
+      selector: (row) => row.roles,
       sortable: true,
     },
     {

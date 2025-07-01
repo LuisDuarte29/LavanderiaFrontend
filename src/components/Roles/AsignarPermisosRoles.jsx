@@ -29,16 +29,8 @@ function AsignarPermisosRoles({ isAuthenticated }) {
       setLocalComponentsFormSelect(dataComponents[0].value);
     }
   }, [dataComponents]);
-
-  // Obtener los permisos cuando cambia el rol o el componente
-  useEffect(() => {
-    if (!rolId || !localComponentsFormSelect) {
-      setLocalRolesSelect([]);
-      return;
-    }
-
-    const tokenRecibido = localStorage.getItem("token");
-    const fetchData = async () => {
+      const tokenRecibido = localStorage.getItem("token");
+ const fetchData = async () => {
       try {
         const response = await fetch(
           `https://localhost:7184/api/Usuarios/GetListPermisosAsignacion/${rolId}/${localComponentsFormSelect}`,
@@ -71,7 +63,12 @@ function AsignarPermisosRoles({ isAuthenticated }) {
         setLocalRolesSelect([]);
       }
     };
-
+  // Obtener los permisos cuando cambia el rol o el componente
+  useEffect(() => {
+    if (!rolId || !localComponentsFormSelect) {
+      setLocalRolesSelect([]);
+      return;
+    }
     fetchData();
   }, [rolId, dataPermisos, localComponentsFormSelect]);
 
@@ -82,7 +79,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
   const GuardarDatosPermisos = async () => {
     const tokenRecibido = localStorage.getItem("token");
     const url = `https://localhost:7184/api/Usuarios/CreatePermisosRole`;
-
+    console.log("Enviando el id componente:", localComponentsFormSelect);
     try {
       const bodyPermisos = {
         RoleId: parseInt(rolId),
@@ -105,6 +102,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
       }
 
       toast.success("✅ Permisos asignados con éxito!");
+      fetchData(); // Refrescar los permisos después de guardar
     } catch (error) {
       toast.error(error.message || "Error al asignar los permisos");
     }

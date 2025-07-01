@@ -1,8 +1,10 @@
 import DataTable, { createTheme } from "react-data-table-component";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { ProgressBar } from "../../Utils/ProgressBar";
+
 import { usePermisosHabilitacion } from "../../Hooks/usePermisosHabilitacion";
+import AccionesListaPedidos from "../Pedidos/PedidosDetails/AccionesListaPedidos";
+import DetallePedido from "../Pedidos/PedidosDetails/DetallePedido";
 // Creamos el tema custom una vez
 createTheme("custom", {
   text: {
@@ -31,38 +33,20 @@ createTheme("custom", {
 });
 
 // Componente de fila expandible para ver servicios
-const DetallePedido = ({ data }) => {
-  return (
-    <div className="p-2 col-md-3">
-      <h6>Servicios:</h6>
-      <ul>
-        {data.services && data.services.length > 0 ? (
-          data.services.map((servicio) => (
-            <li key={servicio.serviceId} className="mb-2">
-              <div className="row align-items-center">
-                <div className="col-4">
-                  <span>{servicio.serviceName}</span>
-                </div>
-                <div className="col-8">
-                  <ProgressBar estado={servicio.estado} />
-                </div>
-              </div>
-            </li>
-          ))
-        ) : (
-          <p>No hay servicios.</p>
-        )}
-      </ul>
-    </div>
-  );
+const DetallePedidos = ({ data }) => {
+  return <DetallePedido data={data}></DetallePedido>;
 };
 
 const ListadoPedidos = ({ isAuthenticated }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const rolId = localStorage.getItem("rolId");
 
-  const { habilitacionPermisos } = usePermisosHabilitacion(isAuthenticated, "ListaPedidos", rolId);
+  const { habilitacionPermisos } = usePermisosHabilitacion(
+    isAuthenticated,
+    "ListaPedidos",
+    rolId
+  );
   useEffect(() => {
     const abort = new AbortController();
     const ListaPedidos = async () => {
@@ -98,59 +82,56 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     };
   }, [isAuthenticated]);
 
-  const columnas = useMemo(()=>
-  [
-    {
-      name: "ID",
-      selector: (row) => row.appointmentId,
-      sortable: true,
+  const handleEditar = useCallback(
+    (row) => {
+      navigate(`/CreatePedidos/${row.appointmentId}`);
     },
-    {
-      name: "Vehículo",
-      selector: (row) => row.vehicle,
-      sortable: true,
-    },
-    {
-      name: "Empleado",
-      selector: (row) => row.employee,
-    },
-    {
-      name: "Comentarios",
-      selector: (row) => row.comments,
-    },
-    {
-      name: "Acciones",
-      cell: (row) => (
-        <div className="d-flex justify-content-end gap-2">
-          {habilitacionPermisos.Eliminar && (
-            <button
-              className="btn btn-sm btn-danger me-1"
-              onClick={() => handleVer(row)}
-            >
-              Ver
-            </button>
-          )}
-
-          {habilitacionPermisos.Actualizar && (
-            <button
-              className="btn btn-sm btn-warning me-1"
-              onClick={() => handleEditar(row)}
-            >
-              Editar
-            </button>
-          )}
-        </div>
-      ),
-    },
-  ], [data, habilitacionPermisos.Actualizar, habilitacionPermisos.Eliminar]
-  ) 
-
-  const handleEditar = (row) => {
-    navigate("/CreatePedidos/" + row.appointmentId);
-  };
-  const handleVer = () => {
+    [navigate]
+  );
+  const handleVer = useCallback(() => {
     console.log("este es el boton de ver");
-  };
+  }, []);
+
+  const columnas = useMemo(
+    () => [
+      {
+        name: "ID",
+        selector: (row) => row.appointmentId,
+        sortable: true,
+      },
+      {
+        name: "Vehículo",
+        selector: (row) => row.vehicle,
+        sortable: true,
+      },
+      {
+        name: "Empleado",
+        selector: (row) => row.employee,
+      },
+      {
+        name: "Comentarios",
+        selector: (row) => row.comments,
+      },
+      {
+        name: "Acciones",
+        cell: (row) => (
+          <AccionesListaPedidos
+            row={row}
+            habilitacionPermisos={habilitacionPermisos}
+            handleEditar={handleEditar}
+            handleVer={handleVer}
+          />
+        ),
+      },
+    ],
+    [
+      habilitacionPermisos.Actualizar,
+      habilitacionPermisos.Eliminar,
+      handleEditar,
+      handleVer,
+    ]
+  );
+
   if (!isAuthenticated || habilitacionPermisos.Leer === false) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -159,26 +140,27 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     );
   }
   return (
-    <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
-      <h2 className="mb-4">Lista de Pedidos</h2>
-      <DataTable
-        columns={columnas}
-        data={data}
-        pagination
-        highlightOnHover
-        striped
-        theme="custom"
-        expandableRows
-        expandableRowsComponent={DetallePedido}
-      />
-      {habilitacionPermisos.Crear ? (
-      <button className="col-md-2 btn btn-primary">
-        <NavLink className="nav-link" to="/CreatePedidos">
-          Crear Pedido
-        </NavLink>
-      </button>
-      ) : null}
- 
+    <div className="mt-5">
+      <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
+        <h2 className="mb-4">Lista de Pedidos</h2>
+        <DataTable
+          columns={columnas}
+          data={data}
+          pagination
+          highlightOnHover
+          striped
+          theme="custom"
+          expandableRows
+          expandableRowsComponent={DetallePedidos}
+        />
+        {habilitacionPermisos.Crear ? (
+          <button className="col-md-2 btn btn-primary">
+            <NavLink className="nav-link" to="/CreatePedidos">
+              Crear Pedido
+            </NavLink>
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 };

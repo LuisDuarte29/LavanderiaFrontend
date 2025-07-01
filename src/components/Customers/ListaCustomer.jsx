@@ -1,5 +1,5 @@
 import DataTable, { createTheme } from "react-data-table-component";
-import { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BrowserRouter as Router,
   useNavigate,
@@ -8,6 +8,7 @@ import {
 import { useListaCustomerGet } from "../../Hooks/useListaCustomerGet";
 import { usePermisosHabilitacion } from "../../Hooks/usePermisosHabilitacion";
 import { ServicesContext } from "../../context/ServicesContext";
+import AccionesListaCustomer from "./AccionesListaCustomer";
 
 // 1. Crear el tema personalizado FUERA del componente
 createTheme("custom", {
@@ -49,82 +50,66 @@ const Lista = ({ isAuthenticated }) => {
     "ListaCustomer",
     rolId
   );
+  const handleEditar = useCallback((row) => {
+    console.log("este es el boton de ver");
+  }, []);
+  const handleVer = useCallback((row) => {
+    console.log("este es el boton de ver");
+  }, []);
+  console.log("Permisos habilitados dentro de lista: ", habilitacionPermisos);
 
-
-
-        console.log("Permisos habilitados dentro de lista: ", habilitacionPermisos);
-
-  if (!isAuthenticated || !habilitacionPermisos.Leer ) {
+  console.log("Este es el data de la lista: " + data);
+  const columnas = useMemo(
+    () => [
+      {
+        name: "ID",
+        selector: (row) => row.id,
+        sortable: true,
+      },
+      {
+        name: "Nombre",
+        selector: (row) => row.firstName,
+        sortable: true,
+      },
+      {
+        name: "Correo",
+        selector: (row) => row.email,
+      },
+      {
+        name: "Acciones",
+        cell: (row) => (
+          <AccionesListaCustomer
+            row={row}
+            habilitacionPermisos={habilitacionPermisos}
+            handleEditar={handleEditar}
+            handleVer={handleVer}
+          />
+        ),
+      },
+    ],
+    [habilitacionPermisos, handleEditar, handleVer]
+  );
+  if (!isAuthenticated || !habilitacionPermisos.Leer) {
     return (
-      <div className="alert alert-danger" role="alert">
+      <div className="alert alert-danger mt-5" role="alert">
         No tienes permiso para ver esta página.
       </div>
     );
   }
   if (loading) {
     return (
-      <div className="alert alert-info" role="alert">
+      <div className="alert alert-info mt-5" role="alert">
         Cargando datos...
       </div>
     );
   }
   if (err != null) {
     return (
-      <div className="alert alert-danger" role="alert">
+      <div className="alert alert-danger mt-5" role="alert">
         Ha ocurrido un error al cargar los datos: {err.message}
       </div>
     );
   }
-  console.log("Este es el data de la lista: " + data);
-  const columnas = [
-    {
-      name: "ID",
-      selector: (row) => row.id,
-      sortable: true,
-    },
-    {
-      name: "Nombre",
-      selector: (row) => row.firstName,
-      sortable: true,
-    },
-    {
-      name: "Correo",
-      selector: (row) => row.email,
-    },
-    {
-      name: "Acciones",
-      cell: (row) => (
-        <div className="d-flex justify-content-end gap-2">
-          {habilitacionPermisos.Eliminar ? (
-      <button
-            className="btn btn-sm btn-primary me-1"
-            onClick={() => handleVer(row)}
-          >
-            Ver
-          </button>
-          ) : null}
-
-          {habilitacionPermisos.Actualizar ? (
-            <button
-              className="btn btn-sm btn-warning me-1"
-              onClick={() => handleEditar(row)}
-            >
-              Editar
-            </button>
-          ) : null}
-        </div>
-      ),
-    },
-  ];
-  const handleEditar = () => {
-    console.log("este es el boton de ver");
-  };
-  const handleVer = () => {
-    console.log("este es el boton de ver");
-  };
-
-  
-
   return (
     <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
       <h2 className="mb-4">Lista de Clientes</h2>
@@ -136,13 +121,13 @@ const Lista = ({ isAuthenticated }) => {
         striped
         theme="custom"
       />
-      <div >
+      <div>
         {habilitacionPermisos.Crear ? (
-           <button className="col-md-2 btn btn-primary">
-          <NavLink className="nav-link" to="/CreateCustomer">
-            Crear Cliente
-          </NavLink>
-        </button>
+          <button className="col-md-2 btn btn-primary">
+            <NavLink className="nav-link" to="/CreateCustomer">
+              Crear Cliente
+            </NavLink>
+          </button>
         ) : null}
       </div>
     </div>

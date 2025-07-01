@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,28 +7,25 @@ import {
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-
 import { ToastContainer } from "react-toastify";
-
 import { Lazy } from "./LazyCarga/Lazy"; // Componente Lazy para carga diferida
-import {Suspense } from "react"; // Importa lazy y Suspense de React
 import ArticulosFaltantes from "./components/Inventario/ArticulosFaltantes";
 import CambioClave from "./components/Login/CambioClave"; // Componente CambioClave
-  import "./../src/App.css";
-  import {LazyLoaders}  from "./LazyCarga/LazyLoaders"; // Importa LazyLoaders para carga diferida de componentes
+import "./../src/App.css";
+import { LazyLoaders } from "./LazyCarga/LazyLoaders"; // Importa LazyLoaders para carga diferida de componentes
 const App = () => {
-  const Dashboard= LazyLoaders("Customers/ListaCustomer")// Carga diferida del componente Lista
+  const Dashboard = LazyLoaders("Customers/ListaCustomer"); // Carga diferida del componente Lista
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
- const ListaForm              = LazyLoaders("Customers/ListaCustomer");
-const CreateUsuarioForm      = LazyLoaders("Usuarios/CreateUsuarios");
-const ListaPedidosForm       = LazyLoaders("Pedidos/ListaPedidos");
-const ListaUsuariosForm      = LazyLoaders("Usuarios/ListaUsuarios");
-const CreatePedidosForm      = LazyLoaders("Pedidos/CreatePedidos");
-const CreateCustomerForm     = LazyLoaders("Customers/CreateCustomer");
-const AsignarPermisosRolesForm = LazyLoaders("Roles/AsignarPermisosRoles");
-const ListaRolesForm         = LazyLoaders("Roles/ListaRoles");
-const LazyNavbar             = LazyLoaders("MasterPageLoad/Navbar");
-const LazyLoginForm          = LazyLoaders("Login/LoginForm");
+  const ListaForm = LazyLoaders("Customers/ListaCustomer");
+  const CreateUsuarioForm = LazyLoaders("Usuarios/CreateUsuarios");
+  const ListaPedidosForm = LazyLoaders("Pedidos/ListaPedidos");
+  const ListaUsuariosForm = LazyLoaders("Usuarios/ListaUsuarios");
+  const CreatePedidosForm = LazyLoaders("Pedidos/CreatePedidos");
+  const CreateCustomerForm = LazyLoaders("Customers/CreateCustomer");
+  const AsignarPermisosRolesForm = LazyLoaders("Roles/AsignarPermisosRoles");
+  const ListaRolesForm = LazyLoaders("Roles/ListaRoles");
+  const LazyNavbar = LazyLoaders("MasterPageLoad/Navbar");
+  const LazyLoginForm = LazyLoaders("Login/LoginForm");
   // Maneja la autenticación
   const handleLogin = (isLoggedIn) => {
     setIsAuthenticated(isLoggedIn); // Actualiza el estado de autenticación

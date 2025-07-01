@@ -1,31 +1,47 @@
-import { useEffect } from "react";
-import { useContext } from "react";
-import { data, useParams } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { useParams } from "react-router-dom";
 import Select from "react-select";
 import { ServicesContext } from "../../context/ServicesContext";
 import { usePermisosGet } from "../../Hooks/usePermisosGet";
-import { DatatableRolePermiso } from "./DatatableRolePermiso";
-import { toast } from "react-toastify";
 import { useComponentsFormGet } from "../../Hooks/useComponentsForm";
+import { toast } from "react-toastify";
+import { DatatableRolePermiso } from "./DatatableRolePermiso";
 
 function AsignarPermisosRoles({ isAuthenticated }) {
   const { rolId, rolName } = useParams();
   const { dataPermisos } = usePermisosGet(isAuthenticated);
   const { dataComponents } = useComponentsFormGet(isAuthenticated);
-  const { rolesSelect, setRolesSelect } = useContext(ServicesContext);
-  const { componentsFormSelect, setComponentsFormSelect } =
-    useContext(ServicesContext);
+
+  // Estados locales para manejar la selección
+  const [localComponentsFormSelect, setLocalComponentsFormSelect] =
+    useState(null);
+  const [localRolesSelect, setLocalRolesSelect] = useState([]);
+
+  const { setRolesSelect } = useContext(ServicesContext);
+
+  // Inicializar el componente seleccionado
   useEffect(() => {
-    console.log("Este es el rolId:", rolId);
-    if (!rolId) {
-      setRolesSelect([]);
+    if (
+      dataComponents &&
+      dataComponents.length > 0 &&
+      !localComponentsFormSelect
+    ) {
+      setLocalComponentsFormSelect(dataComponents[0].value);
+    }
+  }, [dataComponents]);
+
+  // Obtener los permisos cuando cambia el rol o el componente
+  useEffect(() => {
+    if (!rolId || !localComponentsFormSelect) {
+      setLocalRolesSelect([]);
       return;
     }
+
     const tokenRecibido = localStorage.getItem("token");
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7184/api/Usuarios/GetListPermisos/${rolId}/${componentsFormSelect}`,
+          `https://localhost:7184/api/Usuarios/GetListPermisosAsignacion/${rolId}/${localComponentsFormSelect}`,
           {
             method: "GET",
             headers: {
@@ -36,136 +52,179 @@ function AsignarPermisosRoles({ isAuthenticated }) {
         );
 
         if (!response.ok) {
-          // Si el servidor responde con un estado de error
           const errorText = await response.text();
-          toast.error(errorText);
-          toast.error("Error al obtener los permisos del rol");
-          setRolesSelect([]);
+          toast.error(errorText || "Error al obtener los permisos del rol");
+          setLocalRolesSelect([]);
           return;
         }
 
-        // ¡No olvides el await aquí!
         const data = await response.json();
-
         const ApiPermiso = data.map((item) => item.permisoId);
-
         const roleOption = dataPermisos.filter((item) =>
           ApiPermiso.includes(item.value)
         );
-        console.log("Permisos del rol:", roleOption);
 
-        if (roleOption) {
-          // Guarda un array plano con el objeto encontrado
-          setRolesSelect(roleOption);
-        } else {
-          setRolesSelect([]);
-        }
+        setLocalRolesSelect(roleOption || []);
+        setRolesSelect(roleOption || []);
       } catch (error) {
-        setRolesSelect([]);
+        toast.error("Error en la conexión");
+        setLocalRolesSelect([]);
       }
     };
 
     fetchData();
-  }, [rolId, dataPermisos, componentsFormSelect]);
+  }, [rolId, dataPermisos, localComponentsFormSelect]);
 
   const selectedComponentOption =
-    dataComponents.find((opt) => opt.value === componentsFormSelect) || null;
+    dataComponents?.find((opt) => opt.value === localComponentsFormSelect) ||
+    null;
 
   const GuardarDatosPermisos = async () => {
-    console.log("funciona el boton GuardarDatosPermisos");
     const tokenRecibido = localStorage.getItem("token");
     const url = `https://localhost:7184/api/Usuarios/CreatePermisosRole`;
+
     try {
       const bodyPermisos = {
         RoleId: parseInt(rolId),
-        PermisosId: rolesSelect.map((permiso) => permiso.value), // Asegúrate de enviar un array de IDs
-        ComponentsFormId: componentsFormSelect, // Asegúrate de enviar el ID del componente
+        PermisosId: localRolesSelect.map((permiso) => parseInt(permiso.value)),
+        ComponentsFormId: parseInt(localComponentsFormSelect),
       };
-      console.log("bodyPermisos →", bodyPermisos);
+
       const response = await fetch(url, {
         headers: {
-          authorization: `Bearer ${tokenRecibido}`,
+          Authorization: `Bearer ${tokenRecibido}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(bodyPermisos),
         method: "PUT",
       });
+
       if (!response.ok) {
-        throw new Error("Error al asignar los permisos al rol");
+        const errorData = await response.text();
+        throw new Error(errorData || "Error al asignar permisos");
       }
+
       toast.success("✅ Permisos asignados con éxito!");
     } catch (error) {
-      toast.error("Error al asignar los permisos:", error);
+      toast.error(error.message || "Error al asignar los permisos");
     }
   };
-  console.log("dataComponentes: →", dataComponents);
+
   return (
-    <div className="mt-5 mb-3 d-flex justify-content-center align-items-center">
-      {/* Le damos un ancho razonable al form */}
-      <div className="w-75 mt-4">
-        <div className="mb-3">
-          <label className="form-label fs-4 text-center d-block">
-            Asignar permisos al rol: <strong>{rolName}</strong>
-          </label>
+    <div className="container mt-5 mb-5">
+      <div className="card shadow-lg">
+        <div className="card-header bg-primary text-white">
+          <h2 className="text-center mb-0">Asignación de Permisos</h2>
         </div>
 
-        {/* Aquí el card ocupa todo el ancho (w-100) y dentro usamos row/col */}
-        <div className="card p-3 w-100 mb-4">
-          <div className="row gx-3">
-            <div className="col-md-6">
+        <div className="card-body">
+          <div className="d-flex justify-content-center mb-4">
+            <div className="alert alert-info w-75 text-center">
+              <h4 className="mb-0">
+                Asignando permisos al rol:{" "}
+                <span className="badge bg-secondary">{rolName}</span>
+              </h4>
+            </div>
+          </div>
+
+          <div className="row mb-4">
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">Componente:</label>
               <Select
-                className="bg-white"
-                options={dataPermisos}
-                value={rolesSelect}
-                onChange={(selectOption) => setRolesSelect(selectOption)}
-                placeholder="Elige permisos..."
+                className="border-primary"
+                options={dataComponents}
+                value={selectedComponentOption}
+                onChange={(selectOption) => {
+                  setLocalComponentsFormSelect(
+                    selectOption ? selectOption.value : null
+                  );
+                }}
+                placeholder="Seleccione un componente..."
                 isSearchable
-                isMulti
-                noOptionsMessage={() => "No hay opciones"}
+                noOptionsMessage={() => "No hay opciones disponibles"}
                 styles={{
                   control: (base) => ({
                     ...base,
                     border: "2px solid #4a90e2",
+                    borderRadius: "8px",
+                    padding: "4px 8px",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   }),
-                  menu: (base) => ({ ...base, zIndex: 100 }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 100,
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+                  }),
+                  option: (base, { isSelected }) => ({
+                    ...base,
+                    backgroundColor: isSelected ? "#4a90e2" : "white",
+                    color: isSelected ? "white" : "#333",
+                    "&:hover": {
+                      backgroundColor: isSelected ? "#4a90e2" : "#e9f0fa",
+                    },
+                  }),
                 }}
               />
             </div>
+
             <div className="col-md-6">
+              <label className="form-label fw-bold">Permisos:</label>
               <Select
-                className="bg-white"
-                options={dataComponents}
-                value={selectedComponentOption} // Usa la variable que ya calculaste
-                onChange={(selectOption) =>
-                  setComponentsFormSelect(
-                    selectOption ? selectOption.value : null
-                  )
-                }
-                placeholder="Elige componente..."
+                className="border-success"
+                options={dataPermisos}
+                value={localRolesSelect}
+                onChange={(selectOption) => setLocalRolesSelect(selectOption)}
+                placeholder="Seleccione permisos..."
                 isSearchable
-                noOptionsMessage={() => "No hay opciones"}
+                isMulti
+                noOptionsMessage={() => "No hay opciones disponibles"}
                 styles={{
                   control: (base) => ({
                     ...base,
-                    border: "2px solid #4a90e2",
+                    border: "2px solid #28a745",
+                    borderRadius: "8px",
+                    padding: "4px 8px",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   }),
-                  menu: (base) => ({ ...base, zIndex: 100 }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 100,
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor: "#d4edda",
+                    borderRadius: "4px",
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: "#155724",
+                    fontWeight: "500",
+                  }),
                 }}
               />
             </div>
           </div>
-        </div>
 
-        <DatatableRolePermiso />
+          <div className="mt-4">
+            <h4 className="text-center mb-3">Permisos Actuales</h4>
+            <div className="border rounded p-3 bg-light">
+              <DatatableRolePermiso />
+            </div>
+          </div>
 
-        <div className="text-center">
-          <button
-            className="btn btn-primary mt-3 mb-3"
-            onClick={GuardarDatosPermisos}
-            type="button"
-          >
-            Guardar los permisos
-          </button>
+          <div className="text-center mt-4">
+            <button
+              className="btn btn-success btn-lg px-5 py-2"
+              onClick={GuardarDatosPermisos}
+              type="button"
+            >
+              <i className="bi bi-save me-2"></i>
+              Guardar Permisos
+            </button>
+          </div>
         </div>
       </div>
     </div>

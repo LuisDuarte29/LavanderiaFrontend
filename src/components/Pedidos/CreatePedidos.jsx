@@ -145,7 +145,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
 
   return (
     <div className=" mt-5 row">
-      <div className="col-md-7 col-sm-8 col-lg-7">
+      <div className="col-md-7 col-sm-8 col-lg-7 mt-5">
         <div className="d-flex justify-content-center align-content-center mt-2 vw-90">
           <div className="card col-md-8">
             <div className=" card-body shadow-lg d-flex justify-content-center">
@@ -268,7 +268,7 @@ const CreatePedidos = ({ isAuthenticated }) => {
         </div>
       </div>
 
-      <div className="mt-2 me-2 col-md-4">
+      <div className="mt-2 me-2 col-md-4 mt-5">
         <Select
           className="bg-white"
           options={dataServicio}

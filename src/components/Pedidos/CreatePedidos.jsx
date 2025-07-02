@@ -144,164 +144,104 @@ const CreatePedidos = ({ isAuthenticated }) => {
   };
 
   return (
-    <div className=" mt-5 row">
-      <div className="col-md-7 col-sm-8 col-lg-7 mt-5">
-        <div className="d-flex justify-content-center align-content-center mt-2 vw-90">
-          <div className="card col-md-8">
-            <div className=" card-body shadow-lg d-flex justify-content-center">
-              <form onSubmit={handleSubmit} className="col-md-11">
-                <div className="">
+    <div className="container mt-5">
+      {/* Tarjeta principal */}
+      <div className="card shadow-lg mt-5 col-lg-11 mx-auto">
+        {/* Header azul */}
+        <div className="card-header bg-primary text-white d-flex justify-content-center">
+          <h2 className="mb-0">Crear Pedido</h2>
+        </div>
+
+        {/* Wrapper gris con borde y padding */}
+        <div className="mt-3 border rounded p-3 bg-light">
+          {/* Tarjeta interior blanca con sombra */}
+          <div className="card shadow-sm mt-1 p-3">
+            <form onSubmit={handleSubmit}>
+              <div className="row">
+                {/* Columna del formulario */}
+                <div className="col-md-6 mb-3">
+                  {/* Fecha */}
                   <DatePicker
                     selected={formData.AppointmentDate}
-                    onChange={(select) =>
-                      setFormData({ ...formData, AppointmentDate: select })
+                    onChange={(sel) =>
+                      setFormData({ ...formData, AppointmentDate: sel })
                     }
                     dateFormat="dd-MM-yyyy"
-                    className="form-control"
+                    className="form-control mb-3"
                     dropdownMode="select"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: "2px solid #4a90e2",
-                        backgroundColor: "#fff", // fondo del control
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        backgroundColor: "#fff", // fondo del menú
-                        opacity: 1, // asegura que no sea transparente
-                        zIndex: 100, // por si se oculta detrás de otros elementos
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
-                        color: "#000",
-                      }),
-                    }}
-                  ></DatePicker>
-                </div>
-                <div className="mt-2">
+                  />
+
+                  {/* Comentarios */}
                   <textarea
-                    type="text"
+                    rows={4}
                     placeholder="Comentarios"
-                    className="bg-white form-control"
-                    label="Comments"
-                    name="comments"
+                    className="form-control mb-3"
                     value={formData.Comments}
                     onChange={(e) =>
                       setFormData({ ...formData, Comments: e.target.value })
                     }
-                    margin="normal"
-                    rows={4}
                   />
-                </div>
-                <div>
+
+                  {/* Vehículo */}
                   <Select
-                    className="bg-white mt-2"
                     options={dataVehicle1}
                     value={formData.Vehicle}
-                    onChange={(selectedOption) =>
-                      setFormData({ ...formData, Vehicle: selectedOption })
+                    onChange={(opt) =>
+                      setFormData({ ...formData, Vehicle: opt })
                     }
-                    placeholder="Elige..."
-                    isSearchable
-                    noOptionsMessage={() => "No hay opciones"}
+                    placeholder="Elige vehículo..."
+                    className="mb-3"
                     styles={{
                       control: (base) => ({
                         ...base,
                         border: "2px solid #4a90e2",
-                        backgroundColor: "#fff", // fondo del control
                       }),
-                      menu: (base) => ({
-                        ...base,
-                        backgroundColor: "#fff", // fondo del menú
-                        opacity: 1, // asegura que no sea transparente
-                        zIndex: 100, // por si se oculta detrás de otros elementos
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
-                        color: "#000",
-                      }),
+                      menu: (base) => ({ ...base, zIndex: 100 }),
                     }}
                   />
-                </div>
-                <div className="mt-2">
+
+                  {/* Empleado */}
                   <Select
-                    className="bg-white"
                     options={dataCustomer}
                     value={formData.Employee}
-                    onChange={(selectedOption) =>
-                      setFormData({ ...formData, Employee: selectedOption })
+                    onChange={(opt) =>
+                      setFormData({ ...formData, Employee: opt })
                     }
-                    placeholder="Elige..."
-                    isSearchable
-                    noOptionsMessage={() => "No hay opciones"}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: "2px solid #4a90e2",
-                        backgroundColor: "#fff", // fondo del control
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        backgroundColor: "#fff", // fondo del menú
-                        opacity: 1, // asegura que no sea transparente
-                        zIndex: 100, // por si se oculta detrás de otros elementos
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
-                        color: "#000",
-                      }),
-                    }}
+                    placeholder="Elige empleado..."
                   />
                 </div>
 
-                <div className="d-flex justify-content-center mt-2">
-                  <button onClick={EnvioData} type="button">
-                    Submit
-                  </button>
+                {/* Columna lateral de servicios */}
+                <div className="col-md-6">
+                  <Select
+                    options={dataServicio}
+                    value={formData.Services}
+                    onChange={(opt) =>
+                      setFormData({ ...formData, Services: opt })
+                    }
+                    placeholder="Elige servicios..."
+                    isMulti
+                  />
+                  <div className="mt-3">
+                    <CreatePedidosDetails />
+                  </div>
                 </div>
-              </form>
-            </div>
+              </div>
+
+              {/* Botón de envío centrado */}
+              <div className="text-center mt-4">
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg px-5 py-2"
+                >
+                  <i className="bi bi-send me-2" />
+                  Enviar Pedido
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-
-      <div className="mt-2 me-2 col-md-4 mt-5">
-        <Select
-          className="bg-white"
-          options={dataServicio}
-          value={formData.Services}
-          onChange={(selectedOption) =>
-            setFormData({ ...formData, Services: selectedOption })
-          }
-          placeholder="Elige..."
-          isSearchable
-          isMulti
-          noOptionsMessage={() => "No hay opciones"}
-          styles={{
-            control: (base) => ({
-              ...base,
-              border: "2px solid #4a90e2",
-              backgroundColor: "#fff", // fondo del control
-            }),
-            menu: (base) => ({
-              ...base,
-              backgroundColor: "#fff", // fondo del menú
-              opacity: 1, // asegura que no sea transparente
-              zIndex: 100, // por si se oculta detrás de otros elementos
-            }),
-            option: (base, state) => ({
-              ...base,
-              backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
-              color: "#000",
-            }),
-          }}
-        />
-        <CreatePedidosDetails />
-      </div>
-      <div></div>
     </div>
   );
 };

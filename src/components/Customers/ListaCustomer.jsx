@@ -111,24 +111,43 @@ const Lista = ({ isAuthenticated }) => {
     );
   }
   return (
-    <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
-      <h2 className="mb-4">Lista de Clientes</h2>
-      <DataTable
-        columns={columnas}
-        data={data}
-        pagination
-        highlightOnHover
-        striped
-        theme="custom"
-      />
-      <div>
-        {habilitacionPermisos.Crear ? (
-          <button className="col-md-2 btn btn-primary">
-            <NavLink className="nav-link" to="/CreateCustomer">
+    <div className="container mt-5">
+      <div className="card shadow-lg mt-5 col-md-10 mx-auto">
+        {/* Cabecera */}
+        <div className="card-header bg-primary text-white d-flex justify-content-center">
+          <h2 className="mb-0">Lista de Clientes</h2>
+        </div>
+
+        {/* Wrapper gris con borde redondeado */}
+        <div className="mt-3 border rounded p-3 bg-light">
+          {/* Tarjeta blanca con sombra pequeña */}
+          <div className="card shadow-sm mt-1">
+            {/* DataTable envuelto directamente por la card */}
+            <DataTable
+              columns={columnas}
+              data={data}
+              pagination
+              highlightOnHover
+              striped
+              theme="custom"
+              // Alternativamente, podrías usar wrapperClasses en lugar de los <div> anteriores:
+              // wrapperClasses="border rounded p-3 bg-light"
+            />
+          </div>
+        </div>
+
+        {/* Botón de crear cliente, solo si tiene permiso */}
+        {habilitacionPermisos.Crear && (
+          <div className="text-center mt-2 mb-1">
+            <NavLink
+              to="/CreateCustomer"
+              className="btn btn-success btn-lg px-5 py-2"
+            >
+              <i className="bi bi-plus-lg me-2" />
               Crear Cliente
             </NavLink>
-          </button>
-        ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

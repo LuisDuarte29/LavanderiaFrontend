@@ -92,23 +92,33 @@ function ListaRoles({ isAutenticated }) {
   };
 
   return (
-    <div className="card shadow-sm p-2 mt-5 col-md-6 mx-auto">
-      <div className="mt-3">
-        <h2 className="mb-4">Lista de Roles</h2>
-        <DataTable
-          columns={columns}
-          data={dataRoles}
-          pagination
-          highlightOnHover
-          striped
-          theme="custom"
-        />
+    <div className="container mt-5 mb-5">
+      <div className="card shadow-lg mt-5">
+        <div className="card-header bg-primary text-white d-flex justify-content-center">
+          <h2 className="text-center mb-0">Lista de Roles</h2>
+        </div>
+        <div className="card-body">
+          <div className="mt-3 border rounded p-3 bg-light">
+            <div className="card shadow-sm mt-1">
+              <DataTable
+                columns={columns}
+                data={dataRoles}
+                pagination
+                highlightOnHover
+                striped
+                theme="custom"
+              />
+            </div>
+          </div>
+          <div className="d-flex justify-content-center text-center mt-3">
+            <button className="btn btn-success btn-lg px-5 py-2 ">
+              <NavLink className="nav-link" to="/CreateRol">
+                Crear Rol
+              </NavLink>
+            </button>
+          </div>
+        </div>
       </div>
-      <button className="col-md-3 btn btn-primary">
-        <NavLink className="nav-link" to="/CreateRol">
-          Crear Rol
-        </NavLink>
-      </button>
     </div>
   );
 }

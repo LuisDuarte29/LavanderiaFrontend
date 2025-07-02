@@ -57,12 +57,14 @@ const LoginForm = ({ onLogin }) => {
         className="card shadow-lg"
         style={{ maxWidth: "400px", width: "100%" }}
       >
-        <div className="card-body p-5">
-          <h2 className="text-center mb-4">Iniciar Sesión</h2>
+        <div className="card-header bg-primary text-white text-center">
+          <h2 className="mb-0">Iniciar Sesión</h2>
+        </div>
+        <div className="card-body p-4">
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="Usuario" className="form-label">
-                Usuario:
+                Usuario
               </label>
               <input
                 ref={usuarioRef}
@@ -75,9 +77,9 @@ const LoginForm = ({ onLogin }) => {
                 required
               />
             </div>
-            <div className="mb-3">
+            <div className="mb-4">
               <label htmlFor="PasswordString" className="form-label">
-                Contraseña:
+                Contraseña
               </label>
               <input
                 type="password"
@@ -89,7 +91,7 @@ const LoginForm = ({ onLogin }) => {
                 required
               />
             </div>
-            <button type="submit" className="btn btn-primary w-100">
+            <button type="submit" className="btn btn-primary w-100 btn-lg">
               Ingresar
             </button>
           </form>

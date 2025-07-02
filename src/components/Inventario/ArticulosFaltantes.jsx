@@ -135,60 +135,71 @@ function ArticulosFaltantes() {
 
   return (
     <div className="container mt-5">
-      <div className="card shadow-sm mt-1 col-md-10 mx-auto p-3 mt-5">
-        <h4 className="mb-2  d-flex justify-content-center">
-          Lista de Servicios
-        </h4>
+      <div className="card shadow-lg mt-5 col-md-10 mx-auto">
+        {/* Cabecera consistente */}
+        <div className="card-header bg-primary text-white d-flex justify-content-center">
+          <h4 className="mb-0">Lista de Servicios</h4>
+        </div>
 
-        <Select
-          className="bg-white"
-          options={articulos}
-          value={articulosSeleccionados}
-          onChange={(selectedOption) =>
-            setArticulosSeleccionados(selectedOption)
-          }
-          placeholder="Elige..."
-          isSearchable
-          isMulti
-          noOptionsMessage={() => "No hay opciones"}
-          styles={{
-            control: (base) => ({
-              ...base,
-              border: "2px solid #4a90e2",
-              backgroundColor: "#fff",
-            }),
-            menu: (base) => ({
-              ...base,
-              backgroundColor: "#fff",
-              opacity: 1,
-              zIndex: 100,
-            }),
-            option: (base, state) => ({
-              ...base,
-              backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
-              color: "#000",
-            }),
-          }}
-        />
+        {/* Contenido interno con recuadro gris claro */}
+        <div className="mt-3 border rounded p-3 bg-light">
+          {/* Select estilizado */}
+          <div className="mb-4">
+            <Select
+              className="bg-white"
+              options={articulos}
+              value={articulosSeleccionados}
+              onChange={(selectedOption) =>
+                setArticulosSeleccionados(selectedOption)
+              }
+              placeholder="Elige..."
+              isSearchable
+              isMulti
+              noOptionsMessage={() => "No hay opciones"}
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  border: "2px solid #4a90e2",
+                  backgroundColor: "#fff",
+                }),
+                menu: (base) => ({
+                  ...base,
+                  backgroundColor: "#fff",
+                  opacity: 1,
+                  zIndex: 100,
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
+                  color: "#000",
+                }),
+              }}
+            />
+          </div>
 
-        <DataTable
-          columns={columns}
-          data={articulosSeleccionados}
-          pagination
-          highlightOnHover
-          striped
-          theme="custom"
-          noDataComponent={
-            <div className="text-center m-2">
-              <p>No hay pedidos disponibles</p>
-            </div>
-          }
-        />
-        <div className="d-flex justify-content-end">
-          <h5 className="text-end me-3">
-            {" "}
-            Precio Total: {PrecioTotalCantidad} GS.
-          </h5>
+          {/* Tarjeta con sombra suave para tabla */}
+          <div className="card shadow-sm mt-2">
+            <DataTable
+              columns={columns}
+              data={articulosSeleccionados}
+              pagination
+              highlightOnHover
+              striped
+              theme="custom"
+              noDataComponent={
+                <div className="text-center m-2">
+                  <p>No hay pedidos disponibles</p>
+                </div>
+              }
+            />
+          </div>
+
+          {/* Total de precio */}
+          <div className="d-flex justify-content-end mt-3">
+            <h5 className="me-3 text-end">
+              Precio Total: {PrecioTotalCantidad} GS.
+            </h5>
+          </div>
         </div>
       </div>
     </div>

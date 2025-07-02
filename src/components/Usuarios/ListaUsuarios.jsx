@@ -74,25 +74,41 @@ function ListaUsuarios({ isAutenticated }) {
       sortable: true,
     },
   ];
-
   return (
-    <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
-      <div className="mt-3">
-        <h2 className="mb-4">Lista de Usuarios</h2>
-        <DataTable
-          columns={columns}
-          data={dataUsuarios}
-          pagination
-          highlightOnHover
-          striped
-          theme="custom"
-        />
+    <div className="container mt-5">
+      {/* Tarjeta principal */}
+      <div className="card shadow-lg mt-5 col-md-10 mx-auto">
+        {/* Cabecera */}
+        <div className="card-header bg-primary text-white d-flex justify-content-center">
+          <h2 className="mb-0">Lista de Usuarios</h2>
+        </div>
+
+        {/* Recuadro gris claro con borde y padding */}
+        <div className="mt-3 border rounded p-3 bg-light">
+          {/* Tarjeta blanca con sombra suave */}
+          <div className="card shadow-sm mt-1 p-3">
+            <DataTable
+              columns={columns}
+              data={dataUsuarios}
+              pagination
+              highlightOnHover
+              striped
+              theme="custom"
+            />
+          </div>
+        </div>
+
+        {/* Botón Crear Usuario, centrado y con padding */}
+        <div className="text-center mt-3 mb-1">
+          <NavLink
+            to="/CreateUsuarios"
+            className="btn btn-primary btn-lg px-5 py-2"
+          >
+            <i className="bi bi-plus-lg me-2" />
+            Crear Usuario
+          </NavLink>
+        </div>
       </div>
-      <button className="col-md-2 btn btn-primary">
-        <NavLink className="nav-link" to="/CreateUsuarios">
-          Crear Usuario
-        </NavLink>
-      </button>
     </div>
   );
 }

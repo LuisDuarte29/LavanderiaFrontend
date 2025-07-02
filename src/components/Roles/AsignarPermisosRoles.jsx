@@ -29,40 +29,40 @@ function AsignarPermisosRoles({ isAuthenticated }) {
       setLocalComponentsFormSelect(dataComponents[0].value);
     }
   }, [dataComponents]);
-      const tokenRecibido = localStorage.getItem("token");
- const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `https://localhost:7184/api/Usuarios/GetListPermisosAsignacion/${rolId}/${localComponentsFormSelect}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${tokenRecibido}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          toast.error(errorText || "Error al obtener los permisos del rol");
-          setLocalRolesSelect([]);
-          return;
+  const tokenRecibido = localStorage.getItem("token");
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7184/api/Usuarios/GetListPermisosAsignacion/${rolId}/${localComponentsFormSelect}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${tokenRecibido}`,
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        const data = await response.json();
-        const ApiPermiso = data.map((item) => item.permisoId);
-        const roleOption = dataPermisos.filter((item) =>
-          ApiPermiso.includes(item.value)
-        );
-
-        setLocalRolesSelect(roleOption || []);
-        setRolesSelect(roleOption || []);
-      } catch (error) {
-        toast.error("Error en la conexión");
+      if (!response.ok) {
+        const errorText = await response.text();
+        toast.error(errorText || "Error al obtener los permisos del rol");
         setLocalRolesSelect([]);
+        return;
       }
-    };
+
+      const data = await response.json();
+      const ApiPermiso = data.map((item) => item.permisoId);
+      const roleOption = dataPermisos.filter((item) =>
+        ApiPermiso.includes(item.value)
+      );
+
+      setLocalRolesSelect(roleOption || []);
+      setRolesSelect(roleOption || []);
+    } catch (error) {
+      toast.error("Error en la conexión");
+      setLocalRolesSelect([]);
+    }
+  };
   // Obtener los permisos cuando cambia el rol o el componente
   useEffect(() => {
     if (!rolId || !localComponentsFormSelect) {
@@ -110,7 +110,7 @@ function AsignarPermisosRoles({ isAuthenticated }) {
 
   return (
     <div className="container mt-5 mb-5">
-      <div className="card shadow-lg">
+      <div className="card shadow-lg mt-5">
         <div className="card-header bg-primary text-white">
           <h2 className="text-center mb-0">Asignación de Permisos</h2>
         </div>

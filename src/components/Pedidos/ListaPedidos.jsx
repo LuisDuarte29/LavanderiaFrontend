@@ -140,26 +140,42 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     );
   }
   return (
-    <div className="mt-5">
-      <div className="card shadow-sm p-2 mt-5 col-md-10 mx-auto">
-        <h2 className="mb-4">Lista de Pedidos</h2>
-        <DataTable
-          columns={columnas}
-          data={data}
-          pagination
-          highlightOnHover
-          striped
-          theme="custom"
-          expandableRows
-          expandableRowsComponent={DetallePedidos}
-        />
-        {habilitacionPermisos.Crear ? (
-          <button className="col-md-2 btn btn-primary">
-            <NavLink className="nav-link" to="/CreatePedidos">
+    <div className="container mt-5">
+      <div className="card shadow-lg mt-5 col-md-10 mx-auto">
+        {/* Cabecera de la tarjeta */}
+        <div className="card-header bg-primary text-white d-flex justify-content-center">
+          <h2 className="mb-0">Lista de Pedidos</h2>
+        </div>
+
+        {/* Recuadro gris claro con padding y borde */}
+        <div className="mt-3 border rounded p-3 bg-light">
+          {/* Tarjeta blanca con sombra suave */}
+          <div className="card shadow-sm mt-1">
+            <DataTable
+              columns={columnas}
+              data={data}
+              pagination
+              highlightOnHover
+              striped
+              theme="custom"
+              expandableRows
+              expandableRowsComponent={DetallePedidos}
+            />
+          </div>
+        </div>
+
+        {/* Botón Crear Pedido (solo si tiene permiso) */}
+        {habilitacionPermisos.Crear && (
+          <div className="text-center mt-4 mb-1">
+            <NavLink
+              to="/CreatePedidos"
+              className="btn btn-primary btn-lg px-5 py-2"
+            >
+              <i className="bi bi-plus-lg me-2" />
               Crear Pedido
             </NavLink>
-          </button>
-        ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

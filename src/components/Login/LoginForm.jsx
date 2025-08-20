@@ -4,36 +4,40 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { ServicesContext } from "../../context/ServicesContext";
 import { useContext } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 const LoginForm = ({ onLogin }) => {
-  const { Usuario, setUsername } = useContext(ServicesContext);
-  const [PasswordString, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    setFocus,
+    formState: { errors },
+  } = useForm();
 
-  const usuarioRef = useRef(null);
+  const {setUsername} = useContext(ServicesContext);
   useEffect(() => {
-    //Current apunta al elemento actual del ref
-    usuarioRef.current.focus();
-  }, []);
+    setFocus("Usuario");
+  }, [setFocus]);
 
-  const navigate = useNavigate();
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     try {
       const response = await fetch("https://localhost:7184/api/Autenticacion", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ correo: Usuario, clave: PasswordString }),
+        body: JSON.stringify({
+          correo: data.Usuario,
+          clave: data.PasswordString,
+        }),
       })
         .then((response) => {
           return response.json();
         })
-        .then((data) => {
-          const token = data.tokenRol.token;
-          const rolId = data.tokenRol.rolId;
-          console.log("La data recibida:", data);
+        .then((dataResponse) => {
+          setUsername(data.Usuario);
+          const token = dataResponse.tokenRol.token;
+          const rolId = dataResponse.tokenRol.rolId;
+          console.log("La data recibida:", dataResponse);
           console.log("Token recibido:", token);
           if (!token) {
             toast.error(
@@ -46,6 +50,8 @@ const LoginForm = ({ onLogin }) => {
           onLogin(true);
         });
     } catch (error) {
+      console.log("este es el usuario:",data.Usuario);
+      console.log("este es el password:",data.PasswordString);
       console.error("Error al comunicarse con la API:", error);
       alert("Ocurrió un error. Verifica tu conexión e inténtalo de nuevo.");
     }
@@ -61,21 +67,21 @@ const LoginForm = ({ onLogin }) => {
           <h2 className="mb-0">Iniciar Sesión</h2>
         </div>
         <div className="card-body p-4">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3">
               <label htmlFor="Usuario" className="form-label">
                 Usuario
               </label>
               <input
-                ref={usuarioRef}
                 type="text"
                 id="Usuario"
                 className="form-control"
-                value={Usuario}
-                onChange={(e) => setUsername(e.target.value)}
+                {...register("Usuario", { required: true })}
                 placeholder="Ingrese su usuario"
-                required
               />
+              {errors.Usuario && (
+                <span className="text-danger">El usuario es requerido</span>
+              )}
             </div>
             <div className="mb-4">
               <label htmlFor="PasswordString" className="form-label">
@@ -85,11 +91,22 @@ const LoginForm = ({ onLogin }) => {
                 type="password"
                 id="PasswordString"
                 className="form-control"
-                value={PasswordString}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("PasswordString", {
+                  required: "El valor es requerido",
+                  minLength: {
+                    value: 2,
+                    message: "El valor debe ser mayor a dos",
+                  },
+                  maxLength: {
+                    value: 7,
+                    message: "El valor debe ser menor a cincuenta",
+                  }
+                })}
                 placeholder="Ingrese su contraseña"
-                required
               />
+              {errors.PasswordString && (
+                <span className="text-danger">{errors.PasswordString.message}</span>
+              )}
             </div>
             <button type="submit" className="btn btn-primary w-100 btn-lg">
               Ingresar

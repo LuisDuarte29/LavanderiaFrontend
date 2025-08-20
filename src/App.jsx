@@ -26,6 +26,7 @@ const App = () => {
   const ListaRolesForm = LazyLoaders("Roles/ListaRoles");
   const LazyNavbar = LazyLoaders("MasterPageLoad/Navbar");
   const LazyLoginForm = LazyLoaders("Login/LoginForm");
+  const DetalleFotosForm=LazyLoaders("Pedidos/PedidosVer/DetallesFotos");
   // Maneja la autenticación
   const handleLogin = (isLoggedIn) => {
     setIsAuthenticated(isLoggedIn); // Actualiza el estado de autenticación
@@ -150,6 +151,24 @@ const App = () => {
                   <>
                     <LazyNavbar setautenticated={setIsAuthenticated} />
                     <CreatePedidosForm isAuthenticated={isAuthenticated} />
+                  </>
+                </Suspense>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+              <Route
+            path="/DetallesFotos/:appointmentId"
+            element={
+              isAuthenticated ? (
+                <Suspense fallback={<Lazy />}>
+                  <>
+                    <LazyNavbar setautenticated={setIsAuthenticated} />{" "}
+                    {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
+                    <DetalleFotosForm/>{" "}
+                    {/* Asegúrate de importar este componente */}
                   </>
                 </Suspense>
               ) : (

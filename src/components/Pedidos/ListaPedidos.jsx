@@ -88,9 +88,11 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     },
     [navigate]
   );
-  const handleVer = useCallback(() => {
-    console.log("este es el boton de ver");
+  const handleVer = useCallback((row) => {
+    navigate(`/DetallesFotos/${row.appointmentId}`);
   }, []);
+
+
 
   const columnas = useMemo(
     () => [

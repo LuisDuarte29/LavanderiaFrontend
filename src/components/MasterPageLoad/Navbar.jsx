@@ -114,6 +114,16 @@ export default function Navbar({ setautenticated }) {
               >
                 Lista Pedidos
               </Button>
+                 <Button
+                component={NavLink}
+                to="/MapaLeaflet"
+                variant="text"
+                color="error"
+                size="small"
+                sx={{ minWidth: 0 }}
+              >
+                Mapa
+              </Button>
               <Button
                 component={NavLink}
                 to="/ArticulosFaltantes"

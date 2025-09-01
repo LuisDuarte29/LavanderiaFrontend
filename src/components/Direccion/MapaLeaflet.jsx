@@ -13,7 +13,6 @@ function MapaLeaflet() {
 
     const marketRef = useRef(null);
 
-
      const [clickedPosition, setClickedPosition] = useState(null);
 
       useEffect(() => {

@@ -28,6 +28,7 @@ const App = () => {
   const LazyLoginForm = LazyLoaders("Login/LoginForm");
   const DetalleFotosForm=LazyLoaders("Pedidos/PedidosVer/DetallesFotos");
   const MapLeafletForm = LazyLoaders("Direccion/MapaLeaflet"); // Carga diferida del componente MapaLeaflet
+  const EstadisticaForm=LazyLoaders("Estadisitica/TipoLavado");
   // Maneja la autenticación
   const handleLogin = (isLoggedIn) => {
     setIsAuthenticated(isLoggedIn); // Actualiza el estado de autenticación
@@ -68,7 +69,7 @@ const App = () => {
                   <>
                     <LazyNavbar setautenticated={setIsAuthenticated} />
                     {/* Aqui debo enviar la funcion de autenticacion para que el navbar se pueda modificar al hacer logout*/}
-                    <Dashboard isAuthenticated={isAuthenticated} />
+                    <EstadisticaForm />
                   </>
                 </Suspense>
               ) : (

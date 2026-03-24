@@ -1,8 +1,14 @@
 import { lazy } from "react";
-export function LazyLoaders(componentsPath){
-      console.log(`..${componentsPath}`);
-    return lazy(() => 
-        import(`../components/${componentsPath}`) 
-    );
-  
+
+const componentModules = import.meta.glob("../components/**/*.jsx");
+
+export function LazyLoaders(componentsPath) {
+  const modulePath = `../components/${componentsPath}.jsx`;
+  const importer = componentModules[modulePath];
+
+  if (!importer) {
+    throw new Error(`No se encontro el componente lazy: ${modulePath}`);
+  }
+
+  return lazy(importer);
 }

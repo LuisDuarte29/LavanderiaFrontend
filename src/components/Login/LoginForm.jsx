@@ -1,24 +1,38 @@
-import React, { useState, useRef, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { ServicesContext } from "../../context/ServicesContext";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LocalCarWashOutlinedIcon from "@mui/icons-material/LocalCarWashOutlined";
+import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
+import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-const LoginForm = ({ onLogin }) => {
+import { ServicesContext } from "../../context/ServicesContext";
+import "./LoginForm.css";
+
+function LoginForm({ onLogin }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
     setFocus,
     formState: { errors },
   } = useForm();
+  const { setUsername } = useContext(ServicesContext);
 
-  const {setUsername} = useContext(ServicesContext);
   useEffect(() => {
     setFocus("Usuario");
   }, [setFocus]);
 
-  const onSubmit = async (data) => {
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const onSubmit = async (formValues) => {
+    setIsSubmitting(true);
+
     try {
       const response = await fetch("https://localhost:7184/api/Autenticacion", {
         method: "POST",
@@ -26,96 +40,162 @@ const LoginForm = ({ onLogin }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          correo: data.Usuario,
-          clave: data.PasswordString,
+          correo: formValues.Usuario,
+          clave: formValues.PasswordString,
         }),
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((dataResponse) => {
-          setUsername(data.Usuario);
-          const token = dataResponse.tokenRol.token;
-          const rolId = dataResponse.tokenRol.rolId;
-          console.log("La data recibida:", dataResponse);
-          console.log("Token recibido:", token);
-          if (!token) {
-            toast.error(
-              "Credenciales incorrectas. Por favor, inténtalo de nuevo."
-            );
-            return;
-          }
-          localStorage.setItem("token", token);
-          localStorage.setItem("rolId", rolId);
-          onLogin(true);
-        });
+      });
+
+      const dataResponse = await response.json();
+      const token = dataResponse?.tokenRol?.token;
+      const rolId = dataResponse?.tokenRol?.rolId;
+
+      if (!response.ok || !token) {
+        toast.error("Credenciales incorrectas. Por favor, intentalo de nuevo.");
+        return;
+      }
+
+      setUsername(formValues.Usuario);
+      localStorage.setItem("token", token);
+      localStorage.setItem("rolId", rolId);
+      onLogin(true);
     } catch (error) {
-      console.log("este es el usuario:",data.Usuario);
-      console.log("este es el password:",data.PasswordString);
       console.error("Error al comunicarse con la API:", error);
-      alert("Ocurrió un error. Verifica tu conexión e inténtalo de nuevo.");
+      toast.error("Ocurrio un error al iniciar sesion. Verifica tu conexion.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100">
-      <div
-        className="card shadow-lg"
-        style={{ maxWidth: "400px", width: "100%" }}
-      >
-        <div className="card-header bg-primary text-white text-center">
-          <h2 className="mb-0">Iniciar Sesión</h2>
+    <section className="login-shell">
+      <div className="login-orb login-orb-left" />
+      <div className="login-orb login-orb-right" />
+
+      <div className="login-panel">
+        <div className="login-brand">
+          <div className="login-brand-badge">
+            <LocalCarWashOutlinedIcon fontSize="medium" />
+          </div>
+
+          <div>
+            <span className="login-kicker">Gestion operativa</span>
+            <h1 className="login-title">Accede a tu panel de trabajo</h1>
+            <p className="login-subtitle">
+              Controla clientes, pedidos y operacion diaria desde una sola
+              plataforma.
+            </p>
+          </div>
+
+          <div className="login-feature-list">
+            <article className="login-feature-card">
+              <ShieldOutlinedIcon />
+              <div>
+                <strong>Acceso seguro</strong>
+                <p>Ingreso protegido con credenciales y roles del sistema.</p>
+              </div>
+            </article>
+
+            <article className="login-feature-card">
+              <BoltOutlinedIcon />
+              <div>
+                <strong>Flujo rapido</strong>
+                <p>Accede en segundos a tus tareas frecuentes del dia.</p>
+              </div>
+            </article>
+          </div>
         </div>
-        <div className="card-body p-4">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="mb-3">
-              <label htmlFor="Usuario" className="form-label">
-                Usuario
-              </label>
-              <input
-                type="text"
+
+        <div className="login-card">
+          <div className="login-card-header">
+            <span className="login-chip">Inicio de sesion</span>
+            <h2>Bienvenido nuevamente</h2>
+            <p>Ingresa tus credenciales para continuar.</p>
+          </div>
+
+          <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
+            <div className="login-field">
+              <label htmlFor="Usuario">Correo o usuario</label>
+              <TextField
                 id="Usuario"
-                className="form-control"
-                {...register("Usuario", { required: true })}
-                placeholder="Ingrese su usuario"
+                fullWidth
+                placeholder="ejemplo@empresa.com"
+                error={Boolean(errors.Usuario)}
+                helperText={errors.Usuario?.message || " "}
+                disabled={isSubmitting}
+                {...register("Usuario", {
+                  required: "El usuario es requerido",
+                })}
               />
-              {errors.Usuario && (
-                <span className="text-danger">El usuario es requerido</span>
-              )}
             </div>
-            <div className="mb-4">
-              <label htmlFor="PasswordString" className="form-label">
-                Contraseña
-              </label>
-              <input
-                type="password"
+
+            <div className="login-field">
+              <label htmlFor="PasswordString">Contrasena</label>
+              <TextField
                 id="PasswordString"
-                className="form-control"
+                fullWidth
+                type={showPassword ? "text" : "password"}
+                placeholder="Ingresa tu contrasena"
+                error={Boolean(errors.PasswordString)}
+                helperText={errors.PasswordString?.message || " "}
+                disabled={isSubmitting}
                 {...register("PasswordString", {
-                  required: "El valor es requerido",
+                  required: "La contrasena es requerida",
                   minLength: {
                     value: 2,
-                    message: "El valor debe ser mayor a dos",
+                    message: "La contrasena debe tener al menos 2 caracteres",
                   },
                   maxLength: {
-                    value: 7,
-                    message: "El valor debe ser menor a cincuenta",
-                  }
+                    value: 50,
+                    message: "La contrasena no puede superar 50 caracteres",
+                  },
                 })}
-                placeholder="Ingrese su contraseña"
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label={
+                            showPassword
+                              ? "Ocultar contrasena"
+                              : "Mostrar contrasena"
+                          }
+                          onClick={handleTogglePassword}
+                          edge="end"
+                        >
+                          {showPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
-              {errors.PasswordString && (
-                <span className="text-danger">{errors.PasswordString.message}</span>
-              )}
             </div>
-            <button type="submit" className="btn btn-primary w-100 btn-lg">
-              Ingresar
+
+            <div className="login-meta">
+              <span className="login-status-dot" />
+              <span>Sistema listo para autenticacion</span>
+            </div>
+
+            <button
+              type="submit"
+              className="login-submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Ingresando..." : "Ingresar al sistema"}
             </button>
           </form>
         </div>
       </div>
-    </div>
+    </section>
   );
+}
+
+LoginForm.propTypes = {
+  onLogin: PropTypes.func.isRequired,
 };
 
 export default LoginForm;

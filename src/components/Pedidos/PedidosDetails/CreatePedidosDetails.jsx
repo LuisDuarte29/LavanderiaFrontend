@@ -1,42 +1,16 @@
-import { useEffect, useState } from "react";
-import DataTable, { createTheme } from "react-data-table-component";
+import DataTable from "react-data-table-component";
 import { useContext } from "react";
 import { ServicesContext } from "../../../context/ServicesContext";
 import { PrecioTotalPedidos } from "../PedidosDetails/PrecioTotalPedidos";
+import {
+  dashboardTableCustomStyles,
+  ensureDashboardTableTheme,
+} from "../../Common/dashboardTableTheme";
 
-createTheme("custom", {
-  text: {
-    primary: "#2c3e50",
-    secondary: "#7f8c8d",
-  },
-  background: {
-    default: "#f8f9fa",
-  },
-  context: {
-    background: "#d6f3ff",
-    text: "#2c3e50",
-  },
-  divider: {
-    default: "#e0e0e0",
-  },
-  action: {
-    button: "#3498db",
-    hover: "#2980b9",
-    disabled: "#bdc3c7",
-  },
-  highlight: {
-    primary: "#e74c3c",
-    secondary: "#2ecc71",
-  },
-});
+ensureDashboardTableTheme();
 
 export function CreatePedidosDetails() {
   const { formData, setFormData } = useContext(ServicesContext);
-
-  console.log(
-    "Estos son los servicios seleccionados ejemplo: ",
-    formData.Services
-  );
 
   const column = [
     {
@@ -75,19 +49,20 @@ export function CreatePedidosDetails() {
       ),
     },
   ];
+
   return (
-    <div className="card shadow-sm mt-1">
-      <h4 className="mb-2 d-flex justify-content-center">Lista de Servicios</h4>
+    <div className="dashboard-table-panel__table-shell">
       <DataTable
         columns={column}
         data={formData.Services}
         pagination
         highlightOnHover
         striped
-        theme="custom"
+        theme="dashboard"
+        customStyles={dashboardTableCustomStyles}
         noDataComponent={
-          <div className="text-center m-2">
-            <p>No hay pedidos disponibles</p>
+          <div className="dashboard-table-empty">
+            No hay servicios agregados al pedido.
           </div>
         }
       />

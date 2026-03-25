@@ -1,285 +1,204 @@
-import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useContext, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 import { NavLink, useNavigate } from "react-router-dom";
-import { styled, alpha } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
-import MenuItem from "@mui/material/MenuItem";
-import Drawer from "@mui/material/Drawer";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import ColorModeIconDropdown from "../../Utils/ColorModelconDropdown";
-import { useContext } from "react";
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
+import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
+import MapRoundedIcon from "@mui/icons-material/MapRounded";
+import Inventory2RoundedIcon from "@mui/icons-material/Inventory2Rounded";
+import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import LockResetRoundedIcon from "@mui/icons-material/LockResetRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import LocalCarWashOutlinedIcon from "@mui/icons-material/LocalCarWashOutlined";
 import { ServicesContext } from "../../context/ServicesContext";
-import ContainerReact from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import NavbarReact from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
+import "./Navbar.css";
 
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  flexShrink: 0,
-  borderRadius: `calc(${theme.shape.borderRadius}px + 8px)`,
-  backdropFilter: "blur(24px)",
-  border: "1px solid",
-  borderColor: (theme.vars || theme).palette.divider,
-  backgroundColor: theme.vars
-    ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.8)`
-    : alpha(theme.palette.background.default, 0.4),
-  boxShadow: (theme.vars || theme).shadows[1],
-  padding: "8px 12px",
-}));
-
-export default function Navbar({ setautenticated }) {
+function Navbar({ setautenticated }) {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const { show, setShow } = useContext(ServicesContext);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isUsersMenuOpen, setIsUsersMenuOpen] = useState(false);
+  const { setShow } = useContext(ServicesContext);
 
-  const handleShow = () => setShow(true);
+  const primaryLinks = useMemo(
+    () => [
+      {
+        to: "/Home",
+        label: "Dashboard",
+        icon: <DashboardRoundedIcon fontSize="small" />,
+      },
+      {
+        to: "/ListaCustomer",
+        label: "Clientes",
+        icon: <GroupsRoundedIcon fontSize="small" />,
+      },
+      {
+        to: "/ListaPedidos",
+        label: "Pedidos",
+        icon: <AssignmentRoundedIcon fontSize="small" />,
+      },
+      {
+        to: "/MapaLeaflet",
+        label: "Mapa",
+        icon: <MapRoundedIcon fontSize="small" />,
+      },
+      {
+        to: "/ArticulosFaltantes",
+        label: "Inventario",
+        icon: <Inventory2RoundedIcon fontSize="small" />,
+      },
+    ],
+    []
+  );
+
+  const adminLinks = useMemo(
+    () => [
+      {
+        to: "/ListaUsuarios",
+        label: "Lista de Usuarios",
+      },
+      {
+        to: "/ListaRoles",
+        label: "Lista de Roles",
+      },
+    ],
+    []
+  );
+
+  const handleShow = () => {
+    setShow(true);
+    setIsSidebarOpen(false);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     setautenticated(false);
     navigate("/login");
-    console.log("Logout exitoso");
   };
 
-  const toggleDrawer = (newOpen) => () => {
-    setOpen(newOpen);
+  const handleCloseMobileSidebar = () => {
+    setIsSidebarOpen(false);
   };
 
   return (
-    <AppBar
-      position="absolute"
-      enableColorOnDark
-      sx={{
-        boxShadow: 0,
-        bgcolor: "transparent",
-        backgroundImage: "none",
-        mt: "calc(var(--template-frame-height, 0px) + 10px)",
-      }}
-    >
-      <Container maxWidth="lg">
-        <StyledToolbar
-          variant="dense"
-          style={{ backgroundColor: "white", opacity: 0.9 }}
-          disableGutters
-        >
-          <Box
-            sx={{
-              flexGrow: 1,
-              color: "text.primary",
-              fontWeight: "bold",
-              display: "flex",
-              alignItems: "center",
-              px: 0,
-            }}
-          >
-            {/* Aquí podrías poner tu logo o marca */}
-            <NavLink
-              to="/Home"
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Box
-                component="span"
-                sx={{ fontWeight: "bold", fontSize: "1.25rem" }}
-              >
-                Lavadero
-              </Box>
-            </NavLink>
-            {/* Menú para pantallas md+ */}
-            <Box sx={{ display: { xs: "none", md: "flex" }, ml: 4, gap: 2 }}>
-              <Button
-                component={NavLink}
-                to="/ListaCustomer"
-                variant="text"
-                color="success"
-                size="small"
-              >
-                Lista Clientes
-              </Button>
-              <Button
-                component={NavLink}
-                to="/ListaPedidos"
-                variant="text"
-                color="error"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Lista Pedidos
-              </Button>
-                 <Button
-                component={NavLink}
-                to="/MapaLeaflet"
-                variant="text"
-                color="error"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Mapa
-              </Button>
-              <Button
-                component={NavLink}
-                to="/ArticulosFaltantes"
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Articulos Faltantes
-              </Button>
-              <Button
-                onClick={handleShow}
-                variant="text"
-                size="small"
-                color="warning"
-                sx={{ minWidth: 0 }}
-              >
-                Cambio de Clave
-              </Button>
-              <NavbarReact bg="light" expand="lg">
-                <ContainerReact>
-                  <NavbarReact.Toggle aria-controls="basic-navbar-nav" />
-                  <NavbarReact.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                      <NavDropdown title="Usuarios" id="basic-nav-dropdown">
-                        <NavDropdown.Item as={NavLink} to="/ListaUsuarios">
-                          <Box
-                            component="span"
-                            sx={{ fontWeight: "bold", fontSize: "1.25rem" }}
-                          >
-                            Lista de Usuarios
-                          </Box>
-                        </NavDropdown.Item>
-                        <NavDropdown.Item as={NavLink} to="/ListaRoles">
-                          <Box
-                            component="span"
-                            sx={{ fontWeight: "bold", fontSize: "1.25rem" }}
-                          >
-                            Lista de Roles
-                          </Box>
-                        </NavDropdown.Item>
-                      </NavDropdown>
-                    </Nav>
-                  </NavbarReact.Collapse>
-                </ContainerReact>
-              </NavbarReact>
-            </Box>
-          </Box>
+    <>
+      <button
+        type="button"
+        className="dashboard-mobile-toggle d-lg-none"
+        onClick={() => setIsSidebarOpen(true)}
+        aria-label="Abrir menu lateral"
+      >
+        <MenuRoundedIcon />
+      </button>
 
-          {/* Botones de autenticación + selector de modo (md+) */}
-          <Box
-            sx={{
-              display: { xs: "none", md: "flex" },
-              gap: 1,
-              alignItems: "center",
-            }}
-          >
-            {!localStorage.getItem("token") ? (
-              <>
-                <Button
-                  component={NavLink}
-                  to="/login"
-                  color="primary"
-                  variant="text"
-                  size="small"
-                >
-                  Sign in
-                </Button>
-                <Button
-                  component={NavLink}
-                  to="/signup"
-                  color="primary"
-                  variant="contained"
-                  size="small"
-                >
-                  Sign up
-                </Button>
-                <ColorModeIconDropdown />
-              </>
-            ) : (
-              <Button
-                onClick={handleLogout}
-                color="primary"
-                variant="outlined"
-                size="small"
-              >
-                Sign out
-              </Button>
-            )}
-          </Box>
+      <div
+        className={`dashboard-sidebar-backdrop ${
+          isSidebarOpen ? "show" : ""
+        }`}
+        onClick={handleCloseMobileSidebar}
+      />
 
-          {/* Iconos y menú hamburguesa (xs) */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
-            <IconButton
-              aria-label="Menú"
-              onClick={toggleDrawer(true)}
-            ></IconButton>
-            <Drawer
-              anchor="top"
-              open={open}
-              onClose={toggleDrawer(false)}
-              PaperProps={{
-                sx: {
-                  top: "var(--template-frame-height, 0px)",
-                },
-              }}
+      <aside
+        className={`dashboard-sidebar ${isSidebarOpen ? "open" : ""}`}
+        aria-label="Navegacion principal"
+      >
+        <div className="dashboard-sidebar__brand">
+          <div className="dashboard-sidebar__brand-icon">
+            <LocalCarWashOutlinedIcon />
+          </div>
+          <div>
+            <p className="dashboard-sidebar__eyebrow">Panel operativo</p>
+            <h2>Lavadero</h2>
+          </div>
+        </div>
+
+        <div className="dashboard-sidebar__section">
+          <span className="dashboard-sidebar__section-title">Navegacion</span>
+
+          <nav className="dashboard-sidebar__nav">
+            {primaryLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  `dashboard-sidebar__link ${isActive ? "active" : ""}`
+                }
+                onClick={handleCloseMobileSidebar}
+              >
+                <span className="dashboard-sidebar__icon">{link.icon}</span>
+                <span>{link.label}</span>
+              </NavLink>
+            ))}
+
+            <button
+              type="button"
+              className={`dashboard-sidebar__link dashboard-sidebar__link--button ${
+                isUsersMenuOpen ? "active" : ""
+              }`}
+              onClick={() => setIsUsersMenuOpen((prev) => !prev)}
             >
-              <Box sx={{ p: 2, backgroundColor: "background.paper" }}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <IconButton onClick={toggleDrawer(false)}>
-                    <CloseRoundedIcon />
-                  </IconButton>
-                </Box>
-                <Divider sx={{ my: 3 }} />
-                {!localStorage.getItem("token") ? (
-                  <>
-                    <MenuItem>
-                      <Button
-                        component={NavLink}
-                        to="/signup"
-                        color="primary"
-                        variant="contained"
-                        fullWidth
-                      >
-                        Sign up
-                      </Button>
-                    </MenuItem>
-                    <MenuItem>
-                      <Button
-                        component={NavLink}
-                        to="/login"
-                        color="primary"
-                        variant="outlined"
-                        fullWidth
-                      >
-                        Sign in
-                      </Button>
-                    </MenuItem>
-                  </>
-                ) : (
-                  <MenuItem>
-                    <Button
-                      onClick={handleLogout}
-                      color="primary"
-                      variant="outlined"
-                      fullWidth
-                    >
-                      Sign out
-                    </Button>
-                  </MenuItem>
-                )}
-              </Box>
-            </Drawer>
-          </Box>
-        </StyledToolbar>
-      </Container>
-    </AppBar>
+              <span className="dashboard-sidebar__icon">
+                <AdminPanelSettingsRoundedIcon fontSize="small" />
+              </span>
+              <span className="dashboard-sidebar__link-content">
+                <span>Administracion</span>
+                <KeyboardArrowDownRoundedIcon
+                  className={`dashboard-sidebar__caret ${
+                    isUsersMenuOpen ? "rotated" : ""
+                  }`}
+                  fontSize="small"
+                />
+              </span>
+            </button>
+
+            <div
+              className={`dashboard-sidebar__subnav ${
+                isUsersMenuOpen ? "open" : ""
+              }`}
+            >
+              {adminLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `dashboard-sidebar__sublink ${isActive ? "active" : ""}`
+                  }
+                  onClick={handleCloseMobileSidebar}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
+          </nav>
+        </div>
+
+        <div className="dashboard-sidebar__footer">
+          <button
+            type="button"
+            className="dashboard-sidebar__action dashboard-sidebar__action--soft"
+            onClick={handleShow}
+          >
+            <LockResetRoundedIcon fontSize="small" />
+            <span>Cambio de clave</span>
+          </button>
+
+          <button
+            type="button"
+            className="dashboard-sidebar__action"
+            onClick={handleLogout}
+          >
+            <LogoutRoundedIcon fontSize="small" />
+            <span>Cerrar sesion</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
+
+Navbar.propTypes = {
+  setautenticated: PropTypes.func.isRequired,
+};
+
+export default Navbar;

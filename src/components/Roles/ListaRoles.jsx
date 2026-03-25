@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from "react";
-import DataTable, { createTheme } from "react-data-table-component";
-import { NavLink } from "react-router-dom";
-import { Navigate, useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
+import { NavLink, useNavigate } from "react-router-dom";
+import DataTablePanel from "../Common/DataTablePanel";
+import {
+  dashboardTableCustomStyles,
+  ensureDashboardTableTheme,
+} from "../Common/dashboardTableTheme";
+
+ensureDashboardTableTheme();
 
 function ListaRoles({ isAutenticated }) {
   const [dataRoles, setDataRoles] = useState([]);
-  const URL_GET_ROLES = "https://localhost:7184/api/Usuarios/GetRoleList"; // Ajusta la ruta a tu endpoint real
+  const navigate = useNavigate();
+  const URL_GET_ROLES = "https://localhost:7184/api/Usuarios/GetRoleList";
 
   useEffect(() => {
     const fetchRoles = async () => {
       const token = localStorage.getItem("token");
+
       try {
         const response = await fetch(URL_GET_ROLES, {
           method: "GET",
@@ -18,13 +27,14 @@ function ListaRoles({ isAutenticated }) {
             "Content-Type": "application/json",
           },
         });
+
         if (!response.ok) {
           console.error("Error al obtener roles");
           return;
         }
+
         const data = await response.json();
         setDataRoles(data);
-        console.log("Estos son los roles obtenidos:", data);
       } catch (err) {
         console.error("Error de red al obtener roles:", err);
       }
@@ -33,34 +43,10 @@ function ListaRoles({ isAutenticated }) {
     fetchRoles();
   }, [isAutenticated]);
 
-  // Define tu tema personalizado (igual que antes)
-  createTheme("custom", {
-    text: {
-      primary: "#2c3e50",
-      secondary: "#7f8c8d",
-    },
-    background: {
-      default: "#f8f9fa",
-    },
-    context: {
-      background: "#d6f3ff",
-      text: "#2c3e50",
-    },
-    divider: {
-      default: "#e0e0e0",
-    },
-    action: {
-      button: "#3498db",
-      hover: "#2980b9",
-      disabled: "#bdc3c7",
-    },
-    highlight: {
-      primary: "#e74c3c",
-      secondary: "#2ecc71",
-    },
-  });
+  const handleVer = (row) => {
+    navigate(`/AsignarPermisosRoles/${row.roleId}/${row.roleName}`);
+  };
 
-  // Columnas para RolId y RolName
   const columns = [
     {
       name: "RoleId",
@@ -86,41 +72,40 @@ function ListaRoles({ isAutenticated }) {
       ),
     },
   ];
-  const navigate = useNavigate();
-  const handleVer = (row) => {
-    navigate("/AsignarPermisosRoles/" + row.roleId + "/" + row.roleName);
-  };
 
   return (
-    <div className="container mt-5 mb-5">
-      <div className="card shadow-lg mt-5">
-        <div className="card-header bg-primary text-white d-flex justify-content-center">
-          <h2 className="text-center mb-0">Lista de Roles</h2>
+    <div className="container-fluid px-0 py-4">
+      <DataTablePanel
+        title="Lista de Roles"
+        subtitle="Gestiona roles y permisos para cada perfil del sistema."
+        action={
+          <NavLink className="dashboard-table-action" to="/CreateRol">
+            Crear Rol
+          </NavLink>
+        }
+      >
+        <div className="dashboard-table-panel__table-shell">
+          <DataTable
+            columns={columns}
+            data={dataRoles}
+            pagination
+            highlightOnHover
+            striped
+            theme="dashboard"
+            customStyles={dashboardTableCustomStyles}
+          />
         </div>
-        <div className="card-body">
-          <div className="mt-3 border rounded p-3 bg-light">
-            <div className="card shadow-sm mt-1">
-              <DataTable
-                columns={columns}
-                data={dataRoles}
-                pagination
-                highlightOnHover
-                striped
-                theme="custom"
-              />
-            </div>
-          </div>
-          <div className="d-flex justify-content-center text-center mt-3">
-            <button className="btn btn-success btn-lg px-5 py-2 ">
-              <NavLink className="nav-link" to="/CreateRol">
-                Crear Rol
-              </NavLink>
-            </button>
-          </div>
-        </div>
-      </div>
+      </DataTablePanel>
     </div>
   );
 }
 
 export default ListaRoles;
+
+ListaRoles.propTypes = {
+  isAutenticated: PropTypes.bool,
+};
+
+ListaRoles.defaultProps = {
+  isAutenticated: false,
+};

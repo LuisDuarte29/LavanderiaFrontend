@@ -1,24 +1,29 @@
 import { useState, useEffect, useContext, useMemo } from "react";
-import DataTable, { createTheme } from "react-data-table-component";
+import DataTable from "react-data-table-component";
 import Select from "react-select";
 import { Counter } from "../../Utils/Counter";
 import { ServicesContext } from "../../context/ServicesContext";
 import { AccionesArticulosFaltantes } from "./AccionesArticulosFaltantes";
+import DataTablePanel from "../Common/DataTablePanel";
+import {
+  dashboardTableCustomStyles,
+  ensureDashboardTableTheme,
+} from "../Common/dashboardTableTheme";
+
+ensureDashboardTableTheme();
 
 function ArticulosFaltantes() {
-  // ———✱ Extraemos del contexto exactamente lo que definimos en ServicesContext:
   const { counts } = useContext(ServicesContext);
-
   const [articulos, setArticulos] = useState([]);
   const [articulosSeleccionados, setArticulosSeleccionados] = useState([]);
-  const [PrecioJusto, setPrecioJusto] = useState([]);
-  const [PrecioTotalCantidad, setPrecioTotalCantidad] = useState(0);
-  console.log("Estos son los articulos seleccionados:", articulosSeleccionados);
+  const [precioJusto, setPrecioJusto] = useState([]);
+  const [precioTotalCantidad, setPrecioTotalCantidad] = useState(0);
 
   const FECH_API_ARTICULOS = "https://localhost:7184/api/Service/Articulos";
 
   useEffect(() => {
     const tokenRecibido = localStorage.getItem("token");
+
     const fetchArticulos = async () => {
       try {
         const response = await fetch(FECH_API_ARTICULOS, {
@@ -28,9 +33,11 @@ function ArticulosFaltantes() {
             Authorization: `Bearer ${tokenRecibido}`,
           },
         });
+
         if (!response.ok) {
           throw new Error("Error al obtener los articulos");
         }
+
         const data = await response.json();
 
         const dataArticulosSelect = data.map((item) => ({
@@ -38,42 +45,17 @@ function ArticulosFaltantes() {
           label: item.nombreArticulo,
           precio: item.precio,
         }));
+
         setArticulos(dataArticulosSelect);
-        console.log("Estos son los articulos todos:", data);
       } catch (error) {
-        console.error("Error al obtener los artículos:", error);
+        console.error("Error al obtener los articulos:", error);
       }
     };
+
     if (tokenRecibido) {
       fetchArticulos();
     }
   }, []);
-
-  createTheme("custom", {
-    text: {
-      primary: "#2c3e50",
-      secondary: "#7f8c8d",
-    },
-    background: {
-      default: "#f8f9fa",
-    },
-    context: {
-      background: "#d6f3ff",
-      text: "#2c3e50",
-    },
-    divider: {
-      default: "#e0e0e0",
-    },
-    action: {
-      button: "#3498db",
-      hover: "#2980b9",
-      disabled: "#bdc3c7",
-    },
-    highlight: {
-      primary: "#e74c3c",
-      secondary: "#2ecc71",
-    },
-  });
 
   const columns = useMemo(
     () => [
@@ -89,7 +71,6 @@ function ArticulosFaltantes() {
       },
       {
         name: "Cantidad",
-        // ———✱ Le pasamos id para que Counter lo use:
         cell: (row) => <Counter id={row.value} />,
       },
       {
@@ -99,15 +80,12 @@ function ArticulosFaltantes() {
       },
       {
         name: "PrecioTotal",
-        // ———✱ Para cada fila, sacamos de counts la cantidad específica:
         selector: (row) => {
           const cantidad = counts[row.value] || 1;
-
           return row.precio * cantidad;
         },
         sortable: true,
       },
-
       {
         name: "Acciones",
         cell: (row) => (
@@ -121,87 +99,93 @@ function ArticulosFaltantes() {
     ],
     [counts, articulosSeleccionados]
   );
+
   useEffect(() => {
-    const precioTotal = articulosSeleccionados.map((row) => {
+    const precios = articulosSeleccionados.map((row) => {
       const cantidad = counts[row.value] || 1;
       return row.precio * cantidad;
     });
-    setPrecioJusto(precioTotal);
+
+    setPrecioJusto(precios);
   }, [articulosSeleccionados, counts]);
+
   useEffect(() => {
-    setPrecioTotalCantidad(PrecioJusto.reduce((acc, item) => acc + item, 0));
-    console.log("Estos son los precios total CANTIDAD:", PrecioTotalCantidad);
-  }, [PrecioJusto]);
+    setPrecioTotalCantidad(precioJusto.reduce((acc, item) => acc + item, 0));
+  }, [precioJusto]);
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow-lg mt-5 col-md-10 mx-auto">
-        {/* Cabecera consistente */}
-        <div className="card-header bg-primary text-white d-flex justify-content-center">
-          <h4 className="mb-0">Lista de Servicios</h4>
+    <div className="container-fluid px-0 py-4">
+      <DataTablePanel
+        title="Articulos Faltantes"
+        subtitle="Selecciona articulos, ajusta cantidades y controla el total pendiente."
+      >
+        <div className="mb-4">
+          <Select
+            className="bg-white"
+            options={articulos}
+            value={articulosSeleccionados}
+            onChange={(selectedOption) => setArticulosSeleccionados(selectedOption)}
+            placeholder="Elige articulos para agregar"
+            isSearchable
+            isMulti
+            noOptionsMessage={() => "No hay opciones"}
+            styles={{
+              control: (base) => ({
+                ...base,
+                minHeight: 54,
+                borderRadius: 18,
+                border: "1px solid rgba(22, 50, 74, 0.12)",
+                boxShadow: "0 10px 24px rgba(20, 44, 67, 0.06)",
+                backgroundColor: "rgba(255,255,255,0.88)",
+              }),
+              menu: (base) => ({
+                ...base,
+                borderRadius: 16,
+                overflow: "hidden",
+                backgroundColor: "#fff",
+                opacity: 1,
+                zIndex: 100,
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused ? "#eef6ff" : "#fff",
+                color: "#16324a",
+              }),
+              multiValue: (base) => ({
+                ...base,
+                borderRadius: 12,
+                backgroundColor: "rgba(13, 110, 253, 0.08)",
+              }),
+            }}
+          />
         </div>
 
-        {/* Contenido interno con recuadro gris claro */}
-        <div className="mt-3 border rounded p-3 bg-light">
-          {/* Select estilizado */}
-          <div className="mb-4">
-            <Select
-              className="bg-white"
-              options={articulos}
-              value={articulosSeleccionados}
-              onChange={(selectedOption) =>
-                setArticulosSeleccionados(selectedOption)
-              }
-              placeholder="Elige..."
-              isSearchable
-              isMulti
-              noOptionsMessage={() => "No hay opciones"}
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  border: "2px solid #4a90e2",
-                  backgroundColor: "#fff",
-                }),
-                menu: (base) => ({
-                  ...base,
-                  backgroundColor: "#fff",
-                  opacity: 1,
-                  zIndex: 100,
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  backgroundColor: state.isFocused ? "#f0f8ff" : "#fff",
-                  color: "#000",
-                }),
-              }}
-            />
-          </div>
+        <div className="dashboard-table-panel__table-shell">
+          <DataTable
+            columns={columns}
+            data={articulosSeleccionados}
+            pagination
+            highlightOnHover
+            striped
+            theme="dashboard"
+            customStyles={dashboardTableCustomStyles}
+            noDataComponent={
+              <div className="dashboard-table-empty">
+                No hay articulos seleccionados todavia.
+              </div>
+            }
+          />
+        </div>
 
-          {/* Tarjeta con sombra suave para tabla */}
-          <div className="card shadow-sm mt-2">
-            <DataTable
-              columns={columns}
-              data={articulosSeleccionados}
-              pagination
-              highlightOnHover
-              striped
-              theme="custom"
-              noDataComponent={
-                <div className="text-center m-2">
-                  <p>No hay pedidos disponibles</p>
-                </div>
-              }
-            />
+        <div className="dashboard-table-panel__footer">
+          <div className="dashboard-table-panel__summary">
+            <strong>{articulosSeleccionados.length}</strong> articulos en seguimiento
           </div>
-
-          {/* Total de precio */}
-          <div className="d-flex justify-content-end mt-3">
-            <h5 className="me-3 text-end">
-              Precio Total: {PrecioTotalCantidad} GS.
-            </h5>
+          <div className="dashboard-table-panel__summary">
+            <strong>Precio Total:</strong> {precioTotalCantidad} GS.
           </div>
         </div>
-      </div>
+      </DataTablePanel>
     </div>
   );
 }

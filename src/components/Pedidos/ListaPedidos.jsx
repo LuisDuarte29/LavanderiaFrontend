@@ -1,40 +1,20 @@
-import DataTable, { createTheme } from "react-data-table-component";
+import DataTable from "react-data-table-component";
+import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-
 import { usePermisosHabilitacion } from "../../Hooks/usePermisosHabilitacion";
 import AccionesListaPedidos from "../Pedidos/PedidosDetails/AccionesListaPedidos";
 import DetallePedido from "../Pedidos/PedidosDetails/DetallePedido";
-// Creamos el tema custom una vez
-createTheme("custom", {
-  text: {
-    primary: "#2c3e50",
-    secondary: "#7f8c8d",
-  },
-  background: {
-    default: "#f8f9fa",
-  },
-  context: {
-    background: "#d6f3ff",
-    text: "#2c3e50",
-  },
-  divider: {
-    default: "#e0e0e0",
-  },
-  action: {
-    button: "#3498db",
-    hover: "#2980b9",
-    disabled: "#bdc3c7",
-  },
-  highlight: {
-    primary: "#e74c3c",
-    secondary: "#2ecc71",
-  },
-});
+import DataTablePanel from "../Common/DataTablePanel";
+import {
+  dashboardTableCustomStyles,
+  ensureDashboardTableTheme,
+} from "../Common/dashboardTableTheme";
 
-// Componente de fila expandible para ver servicios
+ensureDashboardTableTheme();
+
 const DetallePedidos = ({ data }) => {
-  return <DetallePedido data={data}></DetallePedido>;
+  return <DetallePedido data={data} />;
 };
 
 const ListadoPedidos = ({ isAuthenticated }) => {
@@ -47,9 +27,11 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     "ListaPedidos",
     rolId
   );
+
   useEffect(() => {
     const abort = new AbortController();
-    const ListaPedidos = async () => {
+
+    const listaPedidos = async () => {
       try {
         const tokenRecibido = localStorage.getItem("token");
 
@@ -65,19 +47,18 @@ const ListadoPedidos = ({ isAuthenticated }) => {
           throw new Error("Ha ocurrido un error");
         }
 
-        const data = await response.json();
-        setData(data);
-        console.log("Esta es la data del customer:", data);
+        const pedidos = await response.json();
+        setData(pedidos);
       } catch (error) {
         console.error("Error al obtener los datos:", error);
       }
     };
 
     if (isAuthenticated) {
-      ListaPedidos();
+      listaPedidos();
     }
+
     return () => {
-      // Limpiar el efecto para evitar fugas de memoria
       abort.abort();
     };
   }, [isAuthenticated]);
@@ -88,11 +69,13 @@ const ListadoPedidos = ({ isAuthenticated }) => {
     },
     [navigate]
   );
-  const handleVer = useCallback((row) => {
-    navigate(`/DetallesFotos/${row.appointmentId}`);
-  }, []);
 
-
+  const handleVer = useCallback(
+    (row) => {
+      navigate(`/DetallesFotos/${row.appointmentId}`);
+    },
+    [navigate]
+  );
 
   const columnas = useMemo(
     () => [
@@ -102,7 +85,7 @@ const ListadoPedidos = ({ isAuthenticated }) => {
         sortable: true,
       },
       {
-        name: "Vehículo",
+        name: "Vehiculo",
         selector: (row) => row.vehicle,
         sortable: true,
       },
@@ -126,61 +109,54 @@ const ListadoPedidos = ({ isAuthenticated }) => {
         ),
       },
     ],
-    [
-      habilitacionPermisos.Actualizar,
-      habilitacionPermisos.Eliminar,
-      handleEditar,
-      handleVer,
-    ]
+    [habilitacionPermisos, handleEditar, handleVer]
   );
 
   if (!isAuthenticated || habilitacionPermisos.Leer === false) {
     return (
       <div className="alert alert-danger" role="alert">
-        No tienes permiso para ver esta página.
+        No tienes permiso para ver esta pagina.
       </div>
     );
   }
+
   return (
-    <div className="container mt-5">
-      <div className="card shadow-lg mt-5 col-md-10 mx-auto">
-        {/* Cabecera de la tarjeta */}
-        <div className="card-header bg-primary text-white d-flex justify-content-center">
-          <h2 className="mb-0">Lista de Pedidos</h2>
-        </div>
-
-        {/* Recuadro gris claro con padding y borde */}
-        <div className="mt-3 border rounded p-3 bg-light">
-          {/* Tarjeta blanca con sombra suave */}
-          <div className="card shadow-sm mt-1">
-            <DataTable
-              columns={columnas}
-              data={data}
-              pagination
-              highlightOnHover
-              striped
-              theme="custom"
-              expandableRows
-              expandableRowsComponent={DetallePedidos}
-            />
-          </div>
-        </div>
-
-        {/* Botón Crear Pedido (solo si tiene permiso) */}
-        {habilitacionPermisos.Crear && (
-          <div className="text-center mt-4 mb-1">
-            <NavLink
-              to="/CreatePedidos"
-              className="btn btn-primary btn-lg px-5 py-2"
-            >
-              <i className="bi bi-plus-lg me-2" />
+    <div className="container-fluid px-0 py-4">
+      <DataTablePanel
+        title="Lista de Pedidos"
+        subtitle="Visualiza pedidos, su detalle operativo y las acciones disponibles."
+        action={
+          habilitacionPermisos.Crear ? (
+            <NavLink to="/CreatePedidos" className="dashboard-table-action">
               Crear Pedido
             </NavLink>
-          </div>
-        )}
-      </div>
+          ) : null
+        }
+      >
+        <div className="dashboard-table-panel__table-shell">
+          <DataTable
+            columns={columnas}
+            data={data}
+            pagination
+            highlightOnHover
+            striped
+            theme="dashboard"
+            customStyles={dashboardTableCustomStyles}
+            expandableRows
+            expandableRowsComponent={DetallePedidos}
+          />
+        </div>
+      </DataTablePanel>
     </div>
   );
 };
 
 export default ListadoPedidos;
+
+DetallePedidos.propTypes = {
+  data: PropTypes.object.isRequired,
+};
+
+ListadoPedidos.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+};

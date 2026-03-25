@@ -1,12 +1,13 @@
 import PropTypes from "prop-types";
 import Navbar from "../../components/MasterPageLoad/Navbar";
+import "./AuthenticatedLayout.css";
 
 function AuthenticatedLayout({ onLogout, children }) {
   return (
-    <>
+    <div className="dashboard-layout">
       <Navbar setautenticated={onLogout} />
-      {children}
-    </>
+      <main className="dashboard-layout__content">{children}</main>
+    </div>
   );
 }
 
